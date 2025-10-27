@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Student Dashboard - AI-Powered Learning Platform
 
 A comprehensive student placement training and coding dashboard with AI-powered interview practice, real-time code execution, and progress analytics.
@@ -108,3 +109,6 @@ MIT License
 ---
 
 **Status:** 🚧 Under Active Development
+=======
+# Student - Dash 
+>>>>>>> ff914c1c2a21a421de4ef6a28ae0501103bcb65a
