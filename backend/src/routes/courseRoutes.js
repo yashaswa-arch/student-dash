@@ -1,5 +1,8 @@
 const express = require('express');
 const Course = require('../models/Course');
+const Progress = require('../models/Progress');
+const Module = require('../models/Module');
+const Lesson = require('../models/Lesson');
 const { auth, authorize } = require('../middleware/auth');
 const { validateCourse, validateObjectId, validatePagination } = require('../middleware/validation');
 
@@ -260,6 +263,262 @@ router.get('/tags/popular', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching popular tags',
+      error: error.message
+    });
+  }
+});
+
+// ===== MVP COURSE MANAGEMENT FEATURES =====
+
+// @route   POST /api/courses/:id/enroll
+// @desc    Enroll student in a course
+// @access  Private (Students)
+router.post('/:id/enroll', auth, validateObjectId('id'), async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user._id;
+
+    // Check if course exists
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found'
+      });
+    }
+
+    // Check if already enrolled
+    const existingProgress = await Progress.findOne({
+      user: userId,
+      course: courseId
+    });
+
+    if (existingProgress) {
+      return res.status(400).json({
+        success: false,
+        message: 'Already enrolled in this course'
+      });
+    }
+
+    // Create progress entry (enrollment)
+    const progress = await Progress.create({
+      user: userId,
+      course: courseId,
+      status: 'in_progress',
+      overallProgress: 0,
+      startedAt: new Date()
+    });
+
+    await progress.populate('course', 'title description instructor');
+
+    res.status(201).json({
+      success: true,
+      message: 'Successfully enrolled in course',
+      data: { progress }
+    });
+
+  } catch (error) {
+    console.error('Course enrollment error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error enrolling in course',
+      error: error.message
+    });
+  }
+});
+
+// @route   GET /api/courses/my-courses
+// @desc    Get user's enrolled courses
+// @access  Private
+router.get('/my-courses', auth, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const enrolledCourses = await Progress.find({ user: userId })
+      .populate('course', 'title description instructor tags createdAt')
+      .populate('course.instructor', 'name email')
+      .sort({ startedAt: -1 });
+
+    const formattedCourses = enrolledCourses.map(progress => ({
+      courseId: progress.course._id,
+      title: progress.course.title,
+      description: progress.course.description,
+      instructor: progress.course.instructor,
+      tags: progress.course.tags,
+      enrolledAt: progress.startedAt,
+      progress: progress.overallProgress,
+      status: progress.status,
+      lastAccessed: progress.lastAccessed,
+      completedAt: progress.completedAt
+    }));
+
+    res.json({
+      success: true,
+      data: { 
+        enrolledCourses: formattedCourses,
+        totalCourses: formattedCourses.length
+      }
+    });
+
+  } catch (error) {
+    console.error('Get my courses error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching enrolled courses',
+      error: error.message
+    });
+  }
+});
+
+// @route   GET /api/courses/:id/progress
+// @desc    Get user's progress in a specific course
+// @access  Private
+router.get('/:id/progress', auth, validateObjectId('id'), async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user._id;
+
+    // Get user's progress
+    const progress = await Progress.findOne({
+      user: userId,
+      course: courseId
+    }).populate('course', 'title description');
+
+    if (!progress) {
+      return res.status(404).json({
+        success: false,
+        message: 'Not enrolled in this course'
+      });
+    }
+
+    // Get course modules and lessons
+    const modules = await Module.find({ course: courseId })
+      .sort({ order: 1 });
+
+    const moduleProgress = [];
+    for (const module of modules) {
+      const lessons = await Lesson.find({ module: module._id })
+        .sort({ order: 1 });
+
+      const completedLessons = progress.completedLessons || [];
+      const lessonProgress = lessons.map(lesson => ({
+        _id: lesson._id,
+        title: lesson.title,
+        type: lesson.type,
+        order: lesson.order,
+        completed: completedLessons.includes(lesson._id.toString())
+      }));
+
+      moduleProgress.push({
+        _id: module._id,
+        title: module.title,
+        description: module.description,
+        order: module.order,
+        lessons: lessonProgress,
+        completedLessons: lessonProgress.filter(l => l.completed).length,
+        totalLessons: lessonProgress.length
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        courseId: progress.course._id,
+        courseTitle: progress.course.title,
+        overallProgress: progress.overallProgress,
+        status: progress.status,
+        startedAt: progress.startedAt,
+        lastAccessed: progress.lastAccessed,
+        completedAt: progress.completedAt,
+        modules: moduleProgress
+      }
+    });
+
+  } catch (error) {
+    console.error('Get course progress error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching course progress',
+      error: error.message
+    });
+  }
+});
+
+// @route   POST /api/courses/:courseId/lessons/:lessonId/complete
+// @desc    Mark a lesson as completed
+// @access  Private
+router.post('/:courseId/lessons/:lessonId/complete', auth, async (req, res) => {
+  try {
+    const { courseId, lessonId } = req.params;
+    const userId = req.user._id;
+
+    // Get user's progress
+    const progress = await Progress.findOne({
+      user: userId,
+      course: courseId
+    });
+
+    if (!progress) {
+      return res.status(404).json({
+        success: false,
+        message: 'Not enrolled in this course'
+      });
+    }
+
+    // Check if lesson exists
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+
+    // Add lesson to completed list if not already completed
+    const completedLessons = progress.completedLessons || [];
+    if (!completedLessons.includes(lessonId)) {
+      completedLessons.push(lessonId);
+    }
+
+    // Calculate overall progress
+    const totalLessons = await Lesson.countDocuments({
+      module: { $in: await Module.find({ course: courseId }).distinct('_id') }
+    });
+    
+    const overallProgress = Math.round((completedLessons.length / totalLessons) * 100);
+
+    // Update progress
+    const updatedProgress = await Progress.findByIdAndUpdate(
+      progress._id,
+      {
+        completedLessons,
+        overallProgress,
+        lastAccessed: new Date(),
+        ...(overallProgress === 100 && { 
+          status: 'completed',
+          completedAt: new Date()
+        })
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: 'Lesson marked as completed',
+      data: {
+        lessonId,
+        overallProgress: updatedProgress.overallProgress,
+        status: updatedProgress.status,
+        completedLessons: updatedProgress.completedLessons.length,
+        totalLessons
+      }
+    });
+
+  } catch (error) {
+    console.error('Complete lesson error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error completing lesson',
       error: error.message
     });
   }

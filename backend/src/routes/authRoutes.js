@@ -19,7 +19,7 @@ const generateToken = (userId) => {
 // @access  Public
 router.post('/register', validateUserRegistration, async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { username, email, password, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -36,7 +36,7 @@ router.post('/register', validateUserRegistration, async (req, res) => {
 
     // Create user
     const user = await User.create({
-      name,
+      username: username,
       email,
       passwordHash,
       role: role || 'student'
@@ -48,18 +48,16 @@ router.post('/register', validateUserRegistration, async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
-      data: {
-        token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          profilePicUrl: user.profilePicUrl
-        }
+      token,
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
       message: 'Error registering user',
@@ -99,18 +97,16 @@ router.post('/login', validateUserLogin, async (req, res) => {
     res.json({
       success: true,
       message: 'Login successful',
-      data: {
-        token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          profilePicUrl: user.profilePicUrl
-        }
+      token,
+      user: {
+        _id: user._id,
+        username: user.username || user.name,
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({
       success: false,
       message: 'Error logging in user',
@@ -119,29 +115,68 @@ router.post('/login', validateUserLogin, async (req, res) => {
   }
 });
 
-// @route   GET /api/auth/me
-// @desc    Get current user
+// @route   GET /api/auth/profile
+// @desc    Get current user profile
 // @access  Private
-router.get('/me', auth, async (req, res) => {
+router.get('/profile', auth, async (req, res) => {
   try {
     res.json({
       success: true,
-      data: {
-        user: {
-          id: req.user._id,
-          name: req.user.name,
-          email: req.user.email,
-          role: req.user.role,
-          profilePicUrl: req.user.profilePicUrl,
-          createdAt: req.user.createdAt,
-          updatedAt: req.user.updatedAt
-        }
+      user: {
+        _id: req.user._id,
+        username: req.user.username || req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        createdAt: req.user.createdAt,
+        updatedAt: req.user.updatedAt
       }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: 'Error fetching user data',
+      error: error.message
+    });
+  }
+});
+
+// @route   GET /api/auth/verify
+// @desc    Verify JWT token
+// @access  Private
+router.get('/verify', auth, async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      message: 'Token is valid',
+      user: {
+        _id: req.user._id,
+        username: req.user.username || req.user.name,
+        email: req.user.email,
+        role: req.user.role
+      }
+    });
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: 'Invalid token'
+    });
+  }
+});
+
+// @route   POST /api/auth/logout
+// @desc    Logout user (currently just confirms logout)
+// @access  Private
+router.post('/logout', auth, async (req, res) => {
+  try {
+    // In a real app, you might want to blacklist the token or handle logout differently
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error logging out',
       error: error.message
     });
   }

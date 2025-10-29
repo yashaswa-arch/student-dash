@@ -3,7 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
@@ -11,10 +12,13 @@ const errorHandler = require('./middleware/errorHandler');
 // Import routes
 const userRoutes = require('./routes/userRoutes');
 const courseRoutes = require('./routes/courseRoutes');
+const moduleRoutes = require('./routes/moduleRoutes');
 const codingQuestionRoutes = require('./routes/codingQuestionRoutes');
 const interviewAttemptRoutes = require('./routes/interviewAttemptRoutes');
 const transcriptRoutes = require('./routes/transcriptRoutes');
 const authRoutes = require('./routes/authRoutes');
+const codeExecutionRoutes = require('./routes/codeExecutionRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -38,7 +42,13 @@ app.use(morgan('combined'));
 
 // CORS
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://192.168.29.214:3000',
+    'http://192.168.29.214:3001',
+    process.env.CLIENT_URL
+  ].filter(Boolean),
   credentials: true
 }));
 
@@ -59,9 +69,12 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/modules', moduleRoutes);
 app.use('/api/questions', codingQuestionRoutes);
 app.use('/api/attempts', interviewAttemptRoutes);
 app.use('/api/transcripts', transcriptRoutes);
+app.use('/api/code-execution', codeExecutionRoutes);
+app.use('/api/ai', aiRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
