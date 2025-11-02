@@ -84,6 +84,18 @@ temp/
 *.sqlite
 *.db
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# Test files
+test_*.py
+*_test.py
+
 # Uploads
 uploads/
 

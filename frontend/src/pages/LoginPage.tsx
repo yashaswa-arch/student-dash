@@ -295,8 +295,8 @@ const LoginPage: React.FC = () => {
             </button>
           </motion.div>
 
-          {/* Signup Link */}
-          <motion.div
+          {/* Sign Up Link */}
+          <motion.div 
             className="text-center mt-6 pt-6 border-t border-gray-700"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -309,6 +309,15 @@ const LoginPage: React.FC = () => {
                 className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
               >
                 Sign up
+              </Link>
+            </p>
+            <p className="text-gray-500 text-sm mt-3">
+              Administrative access?{' '}
+              <Link 
+                to="/admin/login" 
+                className="text-red-400 hover:text-red-300 font-medium transition-colors"
+              >
+                Admin Login
               </Link>
             </p>
           </motion.div>

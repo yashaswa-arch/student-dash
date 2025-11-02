@@ -3,34 +3,52 @@ const User = require('../models/User');
 
 const courseData = [
   {
-    title: 'Data Structures and Algorithms',
-    description: 'Comprehensive course covering fundamental data structures and algorithms essential for technical interviews.',
-    tags: ['algorithms', 'data-structures', 'interview-prep', 'computer-science']
+    title: 'JavaScript Fundamentals',
+    description: 'Master the basics of JavaScript programming including variables, functions, objects, and modern ES6+ features. Perfect for beginners starting their coding journey.',
+    tags: ['javascript', 'frontend', 'web-development', 'beginner'],
+    level: 'Beginner',
+    duration: '6 weeks',
+    lessonsCount: 24
   },
   {
-    title: 'System Design Fundamentals',
-    description: 'Learn to design scalable systems from scratch, covering load balancing, databases, caching, and microservices.',
-    tags: ['system-design', 'scalability', 'architecture', 'distributed-systems']
+    title: 'Python for Data Science',
+    description: 'Learn Python programming with focus on data analysis, visualization, and machine learning. Includes pandas, numpy, and matplotlib.',
+    tags: ['python', 'data-science', 'machine-learning', 'intermediate'],
+    level: 'Intermediate',
+    duration: '8 weeks',
+    lessonsCount: 32
   },
   {
-    title: 'Advanced JavaScript Concepts',
-    description: 'Deep dive into JavaScript including closures, prototypes, async programming, and modern ES6+ features.',
-    tags: ['javascript', 'frontend', 'web-development', 'programming']
+    title: 'React.js Complete Guide',
+    description: 'Build modern web applications with React.js. Covers components, hooks, state management, and best practices for frontend development.',
+    tags: ['react', 'frontend', 'javascript', 'web-development'],
+    level: 'Intermediate',
+    duration: '10 weeks',
+    lessonsCount: 40
   },
   {
-    title: 'Python for Technical Interviews',
-    description: 'Master Python programming concepts and problem-solving techniques for coding interviews.',
-    tags: ['python', 'programming', 'interview-prep', 'problem-solving']
+    title: 'Data Structures & Algorithms',
+    description: 'Essential computer science concepts for technical interviews. Arrays, linked lists, trees, graphs, sorting, and searching algorithms.',
+    tags: ['algorithms', 'data-structures', 'interview-prep', 'advanced'],
+    level: 'Advanced',
+    duration: '12 weeks',
+    lessonsCount: 48
   },
   {
-    title: 'Database Design and SQL',
-    description: 'Learn database design principles, normalization, and advanced SQL queries for technical interviews.',
-    tags: ['database', 'sql', 'data-modeling', 'backend']
+    title: 'Node.js Backend Development',
+    description: 'Build scalable backend applications with Node.js and Express. Covers APIs, databases, authentication, and deployment.',
+    tags: ['nodejs', 'backend', 'javascript', 'api'],
+    level: 'Intermediate',
+    duration: '8 weeks',
+    lessonsCount: 30
   },
   {
-    title: 'Machine Learning Basics',
-    description: 'Introduction to machine learning algorithms and their applications in software engineering.',
-    tags: ['machine-learning', 'ai', 'data-science', 'algorithms']
+    title: 'Database Design with SQL',
+    description: 'Learn database design principles, SQL queries, normalization, and optimization. Covers PostgreSQL and MySQL.',
+    tags: ['sql', 'database', 'backend', 'data-modeling'],
+    level: 'Beginner',
+    duration: '6 weeks',
+    lessonsCount: 20
   }
 ];
 

@@ -337,6 +337,15 @@ const SignupPage: React.FC = () => {
                 Sign in
               </Link>
             </p>
+            <p className="text-gray-500 text-sm mt-3">
+              Administrative access?{' '}
+              <Link 
+                to="/admin/login" 
+                className="text-red-400 hover:text-red-300 font-medium transition-colors"
+              >
+                Admin Login
+              </Link>
+            </p>
           </motion.div>
 
           {/* Back to Home */}

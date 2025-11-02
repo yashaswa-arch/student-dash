@@ -11,10 +11,15 @@ import { selectIsAuthenticated } from './store/slices/authSlice'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
-import StudentDashboard from './pages/StudentDashboard'
+import StudentDashboard from './pages/NewStudentDashboard'
+import CodeAnalysisPage from './pages/CodeAnalysisPage'
+import AdminLoginPage from './pages/AdminLoginPage'
+import AdminDashboard from './pages/AdminDashboard'
+import SimpleAdminDashboard from './pages/SimpleAdminDashboard'
 
 // Components
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import AdminProtectedRoute from './components/auth/AdminProtectedRoute'
 import ThemeProvider from './components/providers/ThemeProvider'
 
 const App: React.FC = () => {
@@ -54,7 +59,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <Router>
+      <Router future={{ v7_relativeSplatPath: true }}>
         <div className="min-h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-300">
           <AnimatePresence mode="wait">
             <Routes>
@@ -113,6 +118,71 @@ const App: React.FC = () => {
                 } 
               />
 
+              {/* Admin Routes */}
+              <Route 
+                path="/admin/login" 
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <AdminLoginPage />
+                  </motion.div>
+                } 
+              />
+
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <AdminProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <AdminDashboard />
+                    </motion.div>
+                  </AdminProtectedRoute>
+                } 
+              />
+
+              {/* Debug route - remove later */}
+              <Route 
+                path="/admin/test" 
+                element={
+                  <div className="min-h-screen bg-red-900 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <h1 className="text-4xl mb-4">Admin Test Page - Navigation Working!</h1>
+                      <button 
+                        onClick={() => window.location.href = '/admin/dashboard'}
+                        className="bg-white text-red-900 px-6 py-3 rounded-lg font-bold"
+                      >
+                        Go to Admin Dashboard
+                      </button>
+                    </div>
+                  </div>
+                } 
+              />
+
+              <Route 
+                path="/admin/simple" 
+                element={
+                  <div className="min-h-screen bg-green-900 flex items-center justify-center">
+                    <h1 className="text-white text-4xl">Simple Admin Dashboard - No Complex Components</h1>
+                  </div>
+                } 
+              />
+
+              <Route 
+                path="/admin/simple-dashboard" 
+                element={
+                  <SimpleAdminDashboard />
+                } 
+              />
+
               {/* Protected Routes */}
               <Route 
                 path="/dashboard" 
@@ -125,6 +195,22 @@ const App: React.FC = () => {
                       transition={{ duration: 0.3 }}
                     >
                       <StudentDashboard />
+                    </motion.div>
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/code-analysis" 
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <CodeAnalysisPage />
                     </motion.div>
                   </ProtectedRoute>
                 } 

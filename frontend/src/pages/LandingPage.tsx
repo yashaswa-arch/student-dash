@@ -102,6 +102,12 @@ const LandingPage: React.FC = () => {
                 Login
               </Link>
               <Link 
+                to="/admin/login" 
+                className="btn btn-ghost btn-md hover:bg-red-500/20 text-red-300 border-red-500/30"
+              >
+                Admin
+              </Link>
+              <Link 
                 to="/signup" 
                 className="btn btn-primary btn-md"
               >
@@ -285,6 +291,7 @@ const LandingPage: React.FC = () => {
               <a href="#" className="hover:text-white transition-colors">Privacy</a>
               <a href="#" className="hover:text-white transition-colors">Terms</a>
               <a href="#" className="hover:text-white transition-colors">Support</a>
+              <Link to="/admin/login" className="hover:text-red-400 transition-colors text-sm">Admin</Link>
             </div>
             <p className="text-gray-500 text-sm mt-6">
               © 2025 StudyPlatform. All rights reserved.

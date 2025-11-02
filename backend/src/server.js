@@ -40,16 +40,17 @@ app.use(limiter);
 // Logging middleware
 app.use(morgan('combined'));
 
-// CORS
+// CORS - Allow specific origins for development
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'http://localhost:3001',
+    'http://127.0.0.1:3000',
     'http://192.168.29.214:3000',
-    'http://192.168.29.214:3001',
-    process.env.CLIENT_URL
-  ].filter(Boolean),
-  credentials: true
+    /^http:\/\/192\.168\.\d+\.\d+:3000$/
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Body parsing middleware
@@ -67,6 +68,8 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/dev', require('./routes/devRoutes')); // Development only
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/modules', moduleRoutes);

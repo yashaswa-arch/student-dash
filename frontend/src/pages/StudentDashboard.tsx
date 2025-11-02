@@ -3,9 +3,23 @@ import { motion } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { selectUser, logoutUser } from '../store/slices/authSlice'
-import { AppDispatch } from '../store'
+import { courseAPI } from '../api/services'
+import type { AppDispatch } from '../store'
 import { Canvas } from '@react-three/fiber'
 import { Float, Box, Sphere, Torus } from '@react-three/drei'
+
+// Course type interface
+interface Course {
+  _id: string
+  title: string
+  description: string
+  tags: string | string[]  // Backend might return as string or array
+  instructor?: {
+    name: string
+    email: string
+  }
+}
+
 import { 
   BookOpen, 
   Code, 
@@ -21,7 +35,6 @@ import {
   Play,
   BarChart3,
   Users,
-  Zap,
   LogOut,
   User,
   Home
@@ -85,19 +98,24 @@ const StatsCard = ({ title, value, icon: Icon, trend, color }: {
 )
 
 // Course Progress Card
-const CourseCard = ({ title, progress, language, nextLesson, duration }: {
+const CourseCard = ({ title, progress, language, nextLesson, duration, instructor, description, courseId, onCourseClick }: {
   title: string
   progress: number
   language: string
   nextLesson: string
   duration: string
+  instructor?: string
+  description?: string
+  courseId?: string
+  onCourseClick?: (courseId: string) => void
 }) => (
   <motion.div
-    className="card glass p-6 hover:bg-white/5 transition-all duration-300"
+    className="card glass p-6 hover:bg-white/5 transition-all duration-300 cursor-pointer"
     whileHover={{ y: -5 }}
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5 }}
+    onClick={() => courseId && onCourseClick?.(courseId)}
   >
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center space-x-3">
@@ -129,8 +147,14 @@ const CourseCard = ({ title, progress, language, nextLesson, duration }: {
         <p className="text-sm text-gray-400">Next: {nextLesson}</p>
         <p className="text-xs text-gray-500">{duration}</p>
       </div>
-      <button className="btn btn-sm btn-primary">
-        Continue
+      <button 
+        className="btn btn-sm btn-primary"
+        onClick={(e) => {
+          e.stopPropagation()
+          courseId && onCourseClick?.(courseId)
+        }}
+      >
+        {progress > 0 ? 'Continue' : 'Start Course'}
         <ArrowRight className="ml-1 h-4 w-4" />
       </button>
     </div>
@@ -194,29 +218,41 @@ const StudentDashboard: React.FC = () => {
     navigate('/')
   }
 
-  const courses = [
-    {
-      title: "Getting Started with Programming",
-      progress: 0,
-      language: "Introduction",
-      nextLesson: "What is Programming?",
-      duration: "15 min"
-    },
-    {
-      title: "HTML & CSS Basics",
-      progress: 0,
-      language: "Web Development",
-      nextLesson: "Creating Your First Webpage",
-      duration: "20 min"
-    },
-    {
-      title: "JavaScript Fundamentals",
-      progress: 0,
-      language: "JavaScript",
-      nextLesson: "Variables and Data Types",
-      duration: "25 min"
+  const handleCourseClick = (courseId: string) => {
+    navigate(`/course/${courseId}`)
+  }
+
+  // State for courses
+  const [courses, setCourses] = React.useState<Course[]>([])
+  const [coursesLoading, setCoursesLoading] = React.useState(true)
+  const [coursesError, setCoursesError] = React.useState<string | null>(null)
+
+  // Fetch courses on component mount
+  React.useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setCoursesLoading(true)
+        console.log('Fetching courses...')
+        const response = await courseAPI.getCourses()
+        console.log('Courses API response:', response)
+        
+        if (response.success && response.data && response.data.courses) {
+          setCourses(response.data.courses)
+          console.log('Courses loaded:', response.data.courses.length)
+        } else {
+          console.error('Invalid response format:', response)
+          setCoursesError('Failed to load courses - invalid response format')
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error)
+        setCoursesError('Failed to load courses')
+      } finally {
+        setCoursesLoading(false)
+      }
     }
-  ]
+
+    fetchCourses()
+  }, [])
 
   const recentActivity = [
     { type: 'started' as const, title: `Welcome to the platform, ${user?.username || 'Student'}!`, time: 'Just now', status: 'Account created successfully' },
@@ -330,9 +366,52 @@ const StudentDashboard: React.FC = () => {
                 <button className="btn btn-ghost btn-sm">View All</button>
               </div>
               <div className="grid gap-6">
-                {courses.map((course, index) => (
-                  <CourseCard key={index} {...course} />
-                ))}
+                {coursesLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="text-gray-400 mt-4">Loading courses...</p>
+                  </div>
+                ) : coursesError ? (
+                  <div className="text-center py-8">
+                    <p className="text-red-400">{coursesError}</p>
+                    <button 
+                      onClick={() => window.location.reload()} 
+                      className="btn btn-primary mt-4"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : courses.length === 0 ? (
+                  <div className="text-center py-8">
+                    <BookOpen className="h-16 w-16 text-gray-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-white mb-2">No Courses Available</h3>
+                    <p className="text-gray-400">Check back later for new courses!</p>
+                  </div>
+                ) : (
+                  courses.map((course, index) => {
+                    // Handle tags being either string or array
+                    const firstTag = Array.isArray(course.tags) 
+                      ? course.tags[0] 
+                      : typeof course.tags === 'string' 
+                        ? course.tags.split(' ')[0] 
+                        : 'Programming'
+                    
+                    return (
+                      <CourseCard 
+                        key={course._id || index} 
+                        courseId={course._id}
+                        title={course.title}
+                        progress={0} // TODO: Get real progress from API
+                        language={firstTag}
+                        nextLesson={`Start ${course.title}`}
+                        duration="Available now"
+                        instructor={course.instructor?.name || 'Instructor'}
+                        description={course.description}
+                        onCourseClick={handleCourseClick}
+                      />
+                    )
+                  })
+                )}
               </div>
             </motion.section>
 
@@ -365,6 +444,7 @@ const StudentDashboard: React.FC = () => {
                 </motion.button>
 
                 <motion.button
+                  onClick={() => navigate('/code-analysis')}
                   className="card glass p-6 text-left hover:bg-white/5 transition-all duration-300 group"
                   whileHover={{ scale: 1.02, y: -2 }}
                 >
@@ -374,9 +454,9 @@ const StudentDashboard: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white group-hover:text-green-300 transition-colors">
-                        Code Challenge
+                        🤖 AI Code Analysis
                       </h3>
-                      <p className="text-gray-400 text-sm">Solve today's problem</p>
+                      <p className="text-gray-400 text-sm">Analyze your code with AI</p>
                     </div>
                   </div>
                 </motion.button>

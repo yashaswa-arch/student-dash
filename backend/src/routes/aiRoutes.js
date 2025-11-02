@@ -44,13 +44,13 @@ router.post('/analyze',
         skill_level: user.skillLevel || 'beginner',
         include_suggestions,
         include_ai_analysis,
-        include_recommendations
+        include_recommendations,
+        user_id: user.userId || 'demo_user'
       };
 
-      // Forward request to AI service
+      // Forward request to AI service (NO AUTH REQUIRED)
       const response = await axios.post(`${AI_SERVICE_URL}/analyze`, aiRequest, {
         headers: {
-          'Authorization': req.headers.authorization,
           'Content-Type': 'application/json'
         },
         timeout: AI_SERVICE_TIMEOUT
@@ -112,7 +112,6 @@ router.post('/quick-analysis',
         language
       }, {
         headers: {
-          'Authorization': req.headers.authorization,
           'Content-Type': 'application/json'
         },
         timeout: 10000 // Shorter timeout for quick analysis
