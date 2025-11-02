@@ -1,66 +1,129 @@
-# StudentDash# Student Dash# 🚀 Student Dash - AI-Powered Coding Platform# 🚀 Student Dash - AI-Powered Coding Platform
+# StudentDash# StudentDash# Student Dash# 🚀 Student Dash - AI-Powered Coding Platform# 🚀 Student Dash - AI-Powered Coding Platform
 
 
 
-An AI-powered platform for coding practice and interview prep. Not just another problem tracker — we actually analyze your code and help you improve.
+AI-powered coding practice and interview prep platform. Track problems, get code feedback, improve skills.
 
 
 
-## What makes it different?A platform for tracking coding problems and getting AI-powered feedback on your solutions. Think LeetCode meets intelligent code review.
+## What it doesAn AI-powered platform for coding practice and interview prep. Not just another problem tracker — we actually analyze your code and help you improve.
 
 
 
-Most coding platforms count how many problems you solve. We look at *how* you solve them.
+- **AI Code Review** – Analyze code for security issues, performance problems, and style improvements
+
+- **Question Tracker** – Manage problems from LeetCode/HackerRank with test cases and notes
+
+- **Progress Analytics** – Activity heatmaps, topic mastery, and coding streaks## What makes it different?A platform for tracking coding problems and getting AI-powered feedback on your solutions. Think LeetCode meets intelligent code review.
+
+- **Multi-Language Support** – Java, Python, JavaScript, C++, Go, Rust, and more
 
 
-
-Get real-time feedback on:I built this to help students prepare for technical interviews while learning from their mistakes through automated code analysis.> **Track your coding journey. Become a better coder with AI.**> **Track your coding journey. Become a better coder with AI.**
-
-- **Code quality and style** - naming, structure, best practices
-
-- **Security vulnerabilities** - SQL injection, XSS, hardcoded secrets
-
-- **Performance issues** - O(n²) algorithms, memory leaks, inefficient queries
-
-- **Logic and approach** - better algorithms, edge cases you missed## What it does
-
-
-
-Then use that feedback to actually get better at coding.
-
-
-
-## Features**Question Tracker** - Keep track of problems you've solved across different platforms (LeetCode, HackerRank, CodeForces). Add test cases, personal notes, and hints. Mark questions as todo, attempted, or solved.An intelligent coding platform that analyzes your code with ML models, detects security vulnerabilities, and provides personalized learning recommendations.
-
-
-
-| Feature | What it does |
-
-|---------|-------------|
-
-| **AI Code Review** | Automatically analyze code for logic errors, performance bottlenecks, security flaws, and style issues using ML models |**AI Code Review** - Submit your solutions and get immediate feedback on:
-
-| **Progress Analytics** | Track your growth with activity heatmaps, topic mastery charts, coding streaks, and trend graphs |
-
-| **Question Tracker** | Manage problems from LeetCode/HackerRank/CodeForces with test cases, notes, and status tracking |- Security issues (SQL injection, XSS, hardcoded secrets)
-
-| **Smart Recommendations** | Get AI-driven suggestions on what to practice next based on your weak areas |
-
-| **Interview Practice** | Practice with interview-style questions and get feedback on your answers |- Performance problems (O(n²) algorithms, memory leaks)---An intelligent coding platform that goes beyond simple problem tracking. Get AI-powered code analysis, security vulnerability detection, performance insights, and personalized learning recommendations as you code.> **Codolio tracks your coding journey. We make you a better coder.**
-
-| **Multi-Language Support** | Submit code in 15+ languages (Java, Python, JavaScript, C++, Go, Rust, etc.) |
-
-- Code quality (naming, structure, best practices)
 
 ## Tech Stack
 
-
+Most coding platforms count how many problems you solve. We look at *how* you solve them.
 
 | Layer | Technologies |
 
-|-------|-------------|**Progress Dashboard** - See your activity over time with a GitHub-style heatmap. Track which topics you're strong at and which need work.
+|-------|-------------|
 
-| **Frontend** | React + TypeScript, Redux Toolkit, Tailwind CSS, Framer Motion |
+| Frontend | React + TypeScript, Tailwind CSS |
+
+| Backend | Node.js + Express, MongoDB, JWT Auth |Get real-time feedback on:I built this to help students prepare for technical interviews while learning from their mistakes through automated code analysis.> **Track your coding journey. Become a better coder with AI.**> **Track your coding journey. Become a better coder with AI.**
+
+| AI Service | Python + FastAPI, CodeBERT |
+
+- **Code quality and style** - naming, structure, best practices
+
+## Setup
+
+- **Security vulnerabilities** - SQL injection, XSS, hardcoded secrets
+
+```bash
+
+# Clone and install- **Performance issues** - O(n²) algorithms, memory leaks, inefficient queries
+
+git clone https://github.com/yashaswa-arch/student-dash.git
+
+cd student-dash- **Logic and approach** - better algorithms, edge cases you missed## What it does
+
+
+
+# Backend
+
+cd backend && npm install
+
+cp .env.example .env  # configure MongoDB URI and JWT secretThen use that feedback to actually get better at coding.
+
+npm start             # port 5000
+
+
+
+# AI Service
+
+cd ../ai-service && pip install -r requirements.txt## Features**Question Tracker** - Keep track of problems you've solved across different platforms (LeetCode, HackerRank, CodeForces). Add test cases, personal notes, and hints. Mark questions as todo, attempted, or solved.An intelligent coding platform that analyzes your code with ML models, detects security vulnerabilities, and provides personalized learning recommendations.
+
+python simple_main.py # port 8001
+
+
+
+# Frontend
+
+cd ../frontend && npm install| Feature | What it does |
+
+npm run dev           # port 3000
+
+```|---------|-------------|
+
+
+
+Quick start: `.\start-all-services.ps1`| **AI Code Review** | Automatically analyze code for logic errors, performance bottlenecks, security flaws, and style issues using ML models |**AI Code Review** - Submit your solutions and get immediate feedback on:
+
+
+
+## API Endpoints| **Progress Analytics** | Track your growth with activity heatmaps, topic mastery charts, coding streaks, and trend graphs |
+
+
+
+**Auth:** `POST /api/auth/login`, `POST /api/auth/signup`| **Question Tracker** | Manage problems from LeetCode/HackerRank/CodeForces with test cases, notes, and status tracking |- Security issues (SQL injection, XSS, hardcoded secrets)
+
+
+
+**Questions:** `GET /api/questions`, `POST /api/questions`, `POST /api/questions/:id/submit`| **Smart Recommendations** | Get AI-driven suggestions on what to practice next based on your weak areas |
+
+
+
+**AI:** `POST /api/ai/analyze`| **Interview Practice** | Practice with interview-style questions and get feedback on your answers |- Performance problems (O(n²) algorithms, memory leaks)---An intelligent coding platform that goes beyond simple problem tracking. Get AI-powered code analysis, security vulnerability detection, performance insights, and personalized learning recommendations as you code.> **Codolio tracks your coding journey. We make you a better coder.**
+
+
+
+## Current Status| **Multi-Language Support** | Submit code in 15+ languages (Java, Python, JavaScript, C++, Go, Rust, etc.) |
+
+
+
+Working: Authentication, Question tracking, AI analysis, Progress dashboard- Code quality (naming, structure, best practices)
+
+
+
+In progress: Code editor, Test runner, Submission history## Tech Stack
+
+
+
+## License
+
+
+
+MIT| Layer | Technologies |
+
+
+
+---|-------|-------------|**Progress Dashboard** - See your activity over time with a GitHub-style heatmap. Track which topics you're strong at and which need work.
+
+
+
+Built by [@yashaswa-arch](https://github.com/yashaswa-arch) | Last updated: November 3, 2025| **Frontend** | React + TypeScript, Redux Toolkit, Tailwind CSS, Framer Motion |
+
 
 | **Backend** | Node.js + Express, MongoDB + Mongoose, JWT Authentication |## ✨ Key Features
 
