@@ -1,44 +1,85 @@
-# StudentDash# StudentDash# Student Dash# 🚀 Student Dash - AI-Powered Coding Platform# 🚀 Student Dash - AI-Powered Coding Platform
+# StudentDash# StudentDash# StudentDash# Student Dash# 🚀 Student Dash - AI-Powered Coding Platform# 🚀 Student Dash - AI-Powered Coding Platform
 
 
 
-AI-powered coding practice and interview prep platform. Track problems, get code feedback, improve skills.
+AI-powered platform for coding practice and interview prep.
 
 
 
-## What it doesAn AI-powered platform for coding practice and interview prep. Not just another problem tracker — we actually analyze your code and help you improve.
+## FeaturesAI-powered coding practice and interview prep platform. Track problems, get code feedback, improve skills.
 
 
 
-- **AI Code Review** – Analyze code for security issues, performance problems, and style improvements
+- AI code analysis (security, performance, style)
 
-- **Question Tracker** – Manage problems from LeetCode/HackerRank with test cases and notes
+- Question tracker with test cases
 
-- **Progress Analytics** – Activity heatmaps, topic mastery, and coding streaks## What makes it different?A platform for tracking coding problems and getting AI-powered feedback on your solutions. Think LeetCode meets intelligent code review.
+- Progress analytics and heatmaps## What it doesAn AI-powered platform for coding practice and interview prep. Not just another problem tracker — we actually analyze your code and help you improve.
 
-- **Multi-Language Support** – Java, Python, JavaScript, C++, Go, Rust, and more
+- Multi-language support (15+)
 
 
 
 ## Tech Stack
 
-Most coding platforms count how many problems you solve. We look at *how* you solve them.
+- **AI Code Review** – Analyze code for security issues, performance problems, and style improvements
 
-| Layer | Technologies |
+**Frontend:** React + TypeScript, Tailwind  
 
-|-------|-------------|
+**Backend:** Node.js, Express, MongoDB  - **Question Tracker** – Manage problems from LeetCode/HackerRank with test cases and notes
 
-| Frontend | React + TypeScript, Tailwind CSS |
+**AI:** Python, FastAPI, CodeBERT
 
-| Backend | Node.js + Express, MongoDB, JWT Auth |Get real-time feedback on:I built this to help students prepare for technical interviews while learning from their mistakes through automated code analysis.> **Track your coding journey. Become a better coder with AI.**> **Track your coding journey. Become a better coder with AI.**
-
-| AI Service | Python + FastAPI, CodeBERT |
-
-- **Code quality and style** - naming, structure, best practices
+- **Progress Analytics** – Activity heatmaps, topic mastery, and coding streaks## What makes it different?A platform for tracking coding problems and getting AI-powered feedback on your solutions. Think LeetCode meets intelligent code review.
 
 ## Setup
 
-- **Security vulnerabilities** - SQL injection, XSS, hardcoded secrets
+- **Multi-Language Support** – Java, Python, JavaScript, C++, Go, Rust, and more
+
+```bash
+
+git clone https://github.com/yashaswa-arch/student-dash.git
+
+cd student-dash
+
+## Tech Stack
+
+# Backend - port 5000
+
+cd backend && npm install && npm startMost coding platforms count how many problems you solve. We look at *how* you solve them.
+
+
+
+# AI Service - port 8001| Layer | Technologies |
+
+cd ai-service && pip install -r requirements.txt && python simple_main.py
+
+|-------|-------------|
+
+# Frontend - port 3000
+
+cd frontend && npm install && npm run dev| Frontend | React + TypeScript, Tailwind CSS |
+
+```
+
+| Backend | Node.js + Express, MongoDB, JWT Auth |Get real-time feedback on:I built this to help students prepare for technical interviews while learning from their mistakes through automated code analysis.> **Track your coding journey. Become a better coder with AI.**> **Track your coding journey. Become a better coder with AI.**
+
+## Status
+
+| AI Service | Python + FastAPI, CodeBERT |
+
+✅ Auth, Question CRUD, AI analysis, Analytics  
+
+🔄 Code editor, Test runner, Submission history- **Code quality and style** - naming, structure, best practices
+
+
+
+---## Setup
+
+
+
+MIT License | [@yashaswa-arch](https://github.com/yashaswa-arch) | Nov 3, 2025- **Security vulnerabilities** - SQL injection, XSS, hardcoded secrets
+
 
 ```bash
 
