@@ -1,114 +1,225 @@
-# 🚀 Student Dash - AI-Powered Coding Platform# 🚀 Student Dash - AI-Powered Coding Platform
+# Student Dash# 🚀 Student Dash - AI-Powered Coding Platform# 🚀 Student Dash - AI-Powered Coding Platform
 
 
 
-> **Track your coding journey. Become a better coder with AI.**> **Track your coding journey. Become a better coder with AI.**
+A platform for tracking coding problems and getting AI-powered feedback on your solutions. Think LeetCode meets intelligent code review.
 
 
 
-An intelligent coding platform that analyzes your code with ML models, detects security vulnerabilities, and provides personalized learning recommendations.
+I built this to help students prepare for technical interviews while learning from their mistakes through automated code analysis.> **Track your coding journey. Become a better coder with AI.**> **Track your coding journey. Become a better coder with AI.**
 
 
 
----An intelligent coding platform that goes beyond simple problem tracking. Get AI-powered code analysis, security vulnerability detection, performance insights, and personalized learning recommendations as you code.> **Codolio tracks your coding journey. We make you a better coder.**
+## What it does
 
 
+
+**Question Tracker** - Keep track of problems you've solved across different platforms (LeetCode, HackerRank, CodeForces). Add test cases, personal notes, and hints. Mark questions as todo, attempted, or solved.An intelligent coding platform that analyzes your code with ML models, detects security vulnerabilities, and provides personalized learning recommendations.
+
+
+
+**AI Code Review** - Submit your solutions and get immediate feedback on:
+
+- Security issues (SQL injection, XSS, hardcoded secrets)
+
+- Performance problems (O(n²) algorithms, memory leaks)---An intelligent coding platform that goes beyond simple problem tracking. Get AI-powered code analysis, security vulnerability detection, performance insights, and personalized learning recommendations as you code.> **Codolio tracks your coding journey. We make you a better coder.**
+
+- Code quality (naming, structure, best practices)
+
+
+
+**Progress Dashboard** - See your activity over time with a GitHub-style heatmap. Track which topics you're strong at and which need work.
 
 ## ✨ Key Features
 
+**Contest Calendar** - Upcoming programming contests from all major platforms in one place.
 
+
+
+## Tech Stack
 
 ### 🤖 **AI Code Analysis**## ✨ What Makes Us DifferentA comprehensive student placement training and coding dashboard with AI-powered interview practice, real-time code execution, and progress analytics.
 
+**Frontend:** React with TypeScript, Redux for state management, Tailwind for styling
+
 - Security vulnerability detection (SQL injection, XSS, hardcoded credentials)
+
+**Backend:** Node.js + Express, MongoDB for data storage, JWT auth
 
 - Performance analysis (memory leaks, O(n²) complexity warnings)
 
+**AI Service:** Python FastAPI service using Microsoft's CodeBERT model for code analysis
+
 - Code quality suggestions (code smells, naming conventions, best practices)
+
+## Running locally
 
 - Multi-language support (Java, Python, JavaScript, C++, Go, Rust, and 10+ more)Unlike traditional coding platforms that just track problems, **Student Dash** analyzes every line of code you write with advanced ML models to help you become a better developer.An intelligent coding platform that goes beyond simple problem tracking. Get AI-powered code analysis, security vulnerability detection, performance insights, and personalized learning recommendations as you code.
 
+You'll need Node.js, Python 3.8+, and MongoDB installed.
 
 
-### 📊 **Progress Tracking**
 
-- GitHub-style activity heatmap
+```bash
 
-- Problem classification (Easy/Medium/Hard)| Feature | Other Platforms | Student Dash |## 🚀 Features
+# Clone the repo### 📊 **Progress Tracking**
 
-- Streak tracking and analytics
+git clone https://github.com/yashaswa-arch/student-dash.git
+
+cd student-dash- GitHub-style activity heatmap
+
+
+
+# Install dependencies- Problem classification (Easy/Medium/Hard)| Feature | Other Platforms | Student Dash |## 🚀 Features
+
+cd backend && npm install
+
+cd ../frontend && npm install- Streak tracking and analytics
+
+cd ../ai-service && pip install -r requirements.txt
 
 - Topic-wise strength analysis|---------|----------------|--------------|
 
+# Set up environment variables
 
+# Create backend/.env with:
 
-### 🎯 **Question Tracker**| Question Tracking | ✅ | ✅ |## ✨ What Makes Us Different
+#   MONGODB_URI=mongodb://localhost:27017/student-dash
+
+#   JWT_SECRET=your-secret-key### 🎯 **Question Tracker**| Question Tracking | ✅ | ✅ |## ✨ What Makes Us Different
+
+#   PORT=5000
 
 - Track problems across platforms (LeetCode, CodeForces, HackerRank)
 
-- Tag and categorize questions| Progress Analytics | ✅ | ✅ + AI Insights |
+# Start MongoDB
 
-- Mark status (Todo/Attempted/Solved)
+mongod- Tag and categorize questions| Progress Analytics | ✅ | ✅ + AI Insights |
+
+
+
+# Run everything (PowerShell)- Mark status (Todo/Attempted/Solved)
+
+.\start-all-services.ps1
 
 - AI analysis for each solution| Contest Calendar | ✅ | ✅ |- **AI-Powered Interview Practice** - Real-time speech analysis and feedback
 
-- Store test cases and personal notes
+# Or manually in 3 terminals:
 
-| **AI Code Analysis** | ❌ | ✅ **Unique!** |
+# Terminal 1: cd ai-service && python simple_main.py- Store test cases and personal notes
+
+# Terminal 2: cd backend && npm start
+
+# Terminal 3: cd frontend && npm run dev| **AI Code Analysis** | ❌ | ✅ **Unique!** |
+
+```
 
 ### 📅 **Contest Calendar**
 
+Then open http://localhost:3000
+
 - Upcoming contests across all platforms| **Security Scanning** | ❌ | ✅ **Unique!** |Unlike traditional coding platforms that just track problems, **CodeMentor** analyzes every line of code you write with advanced ML models to help you become a better developer.- **Code Execution Engine** - Multi-language support with automated testing
+
+## API Endpoints
 
 - Contest history and rating trends
 
-- One-click reminders| **Performance Analysis** | ❌ | ✅ **Unique!** |
+Main routes:
+
+- `POST /api/auth/login` - User login- One-click reminders| **Performance Analysis** | ❌ | ✅ **Unique!** |
+
+- `GET /api/questions` - Get all questions with filters
+
+- `POST /api/questions` - Add a new question
+
+- `POST /api/questions/:id/submit` - Submit solution for AI analysis
+
+- `GET /api/questions/stats` - Get your solving statistics---| **ML Error Detection** | ❌ | ✅ **Unique!** |- **Progress Analytics** - Comprehensive skill tracking and learning paths
+
+- `POST /api/ai/analyze` - Analyze code snippet
 
 
 
----| **ML Error Detection** | ❌ | ✅ **Unique!** |- **Progress Analytics** - Comprehensive skill tracking and learning paths
-
-
+## Project Structure
 
 ## 🛠️ Tech Stack
 
+```
 
+student-dash/
 
-**Frontend:** React 18, TypeScript, Redux Toolkit, Tailwind CSS, Framer Motion, Vite---| Feature | Other Platforms | CodeMentor |- **Real-time Collaboration** - Live coding interviews and mentorship
+├── frontend/          # React app
 
+├── backend/           # Express API server**Frontend:** React 18, TypeScript, Redux Toolkit, Tailwind CSS, Framer Motion, Vite---| Feature | Other Platforms | CodeMentor |- **Real-time Collaboration** - Live coding interviews and mentorship
 
+├── ai-service/        # Python ML service
+
+└── start-all-services.ps1
+
+```
 
 **Backend:** Node.js, Express.js, MongoDB, Mongoose, JWT Auth, RESTful API
 
-
-
-**AI Service:** Python, FastAPI, CodeBERT (Microsoft), PyTorch, Transformers## 🎯 Core Features|---------|----------------|------------|- **Gamification** - Badges, leaderboards, and achievement system
-
-
-
----
+## Current Status
 
 
 
-## 🚀 Quick Start### 1. 🤖 **AI Code Analysis** (Our USP)| Question Tracking | ✅ | ✅ |- **Placement Management** - Job applications and company connections
+Most core features are working:
+
+- ✅ User authentication**AI Service:** Python, FastAPI, CodeBERT (Microsoft), PyTorch, Transformers## 🎯 Core Features|---------|----------------|------------|- **Gamification** - Badges, leaderboards, and achievement system
+
+- ✅ Question tracking (add, edit, delete)
+
+- ✅ AI code analysis with ML
+
+- ✅ Progress tracking and stats
+
+- ✅ Activity heatmap---
 
 
 
-### Prerequisites- **Security Vulnerability Detection**
+Still working on:
 
-- Node.js 16+
+- Code editor integration (Monaco)
 
-- Python 3.8+  - SQL Injection| Progress Analytics | ✅ | ✅ + AI Insights |
+- Test runner for running test cases## 🚀 Quick Start### 1. 🤖 **AI Code Analysis** (Our USP)| Question Tracking | ✅ | ✅ |- **Placement Management** - Job applications and company connections
 
-- MongoDB
+- Submission history view
 
-  - XSS (Cross-Site Scripting)
+- Platform API integrations (LeetCode, etc.)
 
-### Installation
 
-  - Hardcoded credentials| Contest Calendar | ✅ | ✅ |## 🛠️ Tech Stack
 
-```bash
+## Contributing### Prerequisites- **Security Vulnerability Detection**
+
+
+
+Feel free to open issues or submit PRs. This is a learning project so I'm open to suggestions and improvements.- Node.js 16+
+
+
+
+## Credits- Python 3.8+  - SQL Injection| Progress Analytics | ✅ | ✅ + AI Insights |
+
+
+
+- Uses Microsoft's CodeBERT model for code understanding- MongoDB
+
+- Monaco Editor for the code editor (coming soon)
+
+- Inspired by platforms like LeetCode, Codolio, and HackerRank  - XSS (Cross-Site Scripting)
+
+
+
+---### Installation
+
+
+
+Built by [@yashaswa-arch](https://github.com/yashaswa-arch)  - Hardcoded credentials| Contest Calendar | ✅ | ✅ |## 🛠️ Tech Stack
+
+
+
+Last updated: November 3, 2025```bash
+
 
 # 1. Clone repository  - Command injection
 
