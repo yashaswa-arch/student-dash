@@ -105,7 +105,7 @@ const NewStudentDashboard: React.FC = () => {
             <div className="flex items-center">
               <Code2 className="text-blue-600 dark:text-blue-400" size={32} />
               <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">
-                CodeMentor
+                Student Dash
               </span>
             </div>
 
@@ -253,7 +253,7 @@ const NewStudentDashboard: React.FC = () => {
                         <button
                           onClick={() => {
                             setShowProfileDropdown(false)
-                            // Navigate to profile
+                            navigate('/profile')
                           }}
                           className="w-full flex items-center gap-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-colors"
                         >
@@ -487,7 +487,10 @@ const NewStudentDashboard: React.FC = () => {
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                       Track questions across LeetCode, CodeForces, etc.
                     </p>
-                    <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                    <button 
+                      onClick={() => navigate('/questions')}
+                      className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    >
                       View Tracker
                     </button>
                   </div>

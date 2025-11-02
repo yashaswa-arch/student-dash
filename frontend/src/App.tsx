@@ -12,6 +12,9 @@ import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import StudentDashboard from './pages/NewStudentDashboard'
+import ProfilePage from './pages/ProfilePage'
+import QuestionTrackerPage from './pages/QuestionTrackerPage'
+import QuestionDetailPage from './pages/QuestionDetailPage'
 import CodeAnalysisPage from './pages/CodeAnalysisPage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboard from './pages/AdminDashboard'
@@ -195,6 +198,54 @@ const App: React.FC = () => {
                       transition={{ duration: 0.3 }}
                     >
                       <StudentDashboard />
+                    </motion.div>
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ProfilePage />
+                    </motion.div>
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/questions" 
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <QuestionTrackerPage />
+                    </motion.div>
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/questions/:id" 
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <QuestionDetailPage />
                     </motion.div>
                   </ProtectedRoute>
                 } 

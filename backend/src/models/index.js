@@ -4,6 +4,7 @@ const Course = require('./Course');
 const CodingQuestion = require('./CodingQuestion');
 const InterviewAttempt = require('./InterviewAttempt');
 const Transcript = require('./Transcript');
+const Question = require('./Question');
 
 // New comprehensive models
 const Module = require('./Module');
@@ -26,6 +27,7 @@ module.exports = {
   CodingQuestion,
   InterviewAttempt,
   Transcript,
+  Question, // NEW: Question Tracker
   
   // Learning structure models
   Module,

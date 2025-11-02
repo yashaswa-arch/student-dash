@@ -19,6 +19,7 @@ const transcriptRoutes = require('./routes/transcriptRoutes');
 const authRoutes = require('./routes/authRoutes');
 const codeExecutionRoutes = require('./routes/codeExecutionRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const questionRoutes = require('./routes/questionRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -73,7 +74,8 @@ app.use('/api/dev', require('./routes/devRoutes')); // Development only
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/modules', moduleRoutes);
-app.use('/api/questions', codingQuestionRoutes);
+app.use('/api/questions', questionRoutes); // NEW: Question Tracker
+app.use('/api/coding-questions', codingQuestionRoutes); // OLD: Renamed to avoid conflict
 app.use('/api/attempts', interviewAttemptRoutes);
 app.use('/api/transcripts', transcriptRoutes);
 app.use('/api/code-execution', codeExecutionRoutes);
