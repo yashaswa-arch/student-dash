@@ -86,6 +86,8 @@ const QuestionTrackerPage: React.FC = () => {
     constraints: '',
     notes: ''
   })
+  const [leetcodeUrl, setLeetcodeUrl] = useState('')
+  const [fetchingFromUrl, setFetchingFromUrl] = useState(false)
   const [tagInput, setTagInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -195,6 +197,42 @@ const QuestionTrackerPage: React.FC = () => {
       alert(error.response?.data?.message || 'Failed to add question')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  const handleFetchFromUrl = async () => {
+    if (!leetcodeUrl.trim()) {
+      alert('Please enter a LeetCode URL')
+      return
+    }
+
+    setFetchingFromUrl(true)
+    try {
+      const token = localStorage.getItem('token')
+      const response = await axios.post(
+        'http://localhost:5000/api/leetcode/fetch',
+        { url: leetcodeUrl },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+
+      const problemData = response.data.problem
+      
+      // Auto-populate form with fetched data
+      setNewQuestion({
+        ...newQuestion,
+        title: problemData.title,
+        description: problemData.description,
+        platform: 'leetcode',
+        platformUrl: problemData.problemUrl,
+        difficulty: problemData.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard'
+      })
+
+      alert(`✅ Fetched: ${problemData.title}`)
+    } catch (error: any) {
+      console.error('Fetch error:', error)
+      alert(error.response?.data?.message || 'Failed to fetch problem from URL')
+    } finally {
+      setFetchingFromUrl(false)
     }
   }
 
@@ -674,6 +712,41 @@ const QuestionTrackerPage: React.FC = () => {
 
               {/* Form */}
               <form onSubmit={handleAddQuestion} className="space-y-6">
+                {/* LeetCode URL Fetcher */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-xl border-2 border-dashed border-blue-300 dark:border-blue-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                    <ExternalLink className="text-blue-600" size={20} />
+                    🚀 Quick Add from LeetCode URL
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Paste a LeetCode URL to automatically fetch problem details
+                  </p>
+                  <div className="flex gap-3">
+                    <input
+                      type="url"
+                      value={leetcodeUrl}
+                      onChange={(e) => setLeetcodeUrl(e.target.value)}
+                      placeholder="https://leetcode.com/problems/two-sum/"
+                      className="flex-1 px-4 py-3 border-2 border-blue-300 dark:border-blue-600 rounded-lg bg-white dark:bg-dark-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleFetchFromUrl}
+                      disabled={fetchingFromUrl}
+                      className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 font-medium whitespace-nowrap"
+                    >
+                      {fetchingFromUrl ? 'Fetching...' : 'Fetch Problem'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px bg-gray-300 dark:bg-dark-600"></div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">or add manually</span>
+                  <div className="flex-1 h-px bg-gray-300 dark:bg-dark-600"></div>
+                </div>
+
                 {/* Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

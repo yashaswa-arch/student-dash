@@ -43,13 +43,27 @@ const submissionSchema = new mongoose.Schema({
     default: 0
   },
   aiAnalysis: {
+    // Mentor-style analysis
+    analysisSummary: String,
+    approachDetected: String,
+    correctness: Boolean,
+    timeComplexity: String,
+    spaceComplexity: String,
+    strengths: [String],
+    weaknesses: [String],
+    improvementSuggestions: [String],
+    nextProblemRecommendation: {
+      topic: String,
+      why: String
+    },
+    mindsetCoaching: String,
+    
+    // Legacy fields (keeping for backward compatibility)
     score: {
       type: Number,
       min: 0,
       max: 100
     },
-    timeComplexity: String,
-    spaceComplexity: String,
     securityIssues: [{
       type: {
         type: String
@@ -112,6 +126,14 @@ const questionSchema = new mongoose.Schema({
     type: String,
     enum: ['easy', 'medium', 'hard'],
     required: true
+  },
+  optimalApproach: {
+    type: String,
+    trim: true // e.g., "Hash Table", "Two Pointers", "Dynamic Programming"
+  },
+  optimalComplexity: {
+    time: String, // e.g., "O(n)"
+    space: String // e.g., "O(1)"
   },
   status: {
     type: String,
@@ -210,7 +232,7 @@ questionSchema.methods.updateStatus = function() {
 // Static method to get user stats
 questionSchema.statics.getUserStats = async function(userId) {
   const stats = await this.aggregate([
-    { $match: { user: mongoose.Types.ObjectId(userId) } },
+    { $match: { user: new mongoose.Types.ObjectId(userId) } },
     {
       $group: {
         _id: null,

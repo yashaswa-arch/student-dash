@@ -14,8 +14,9 @@ import SignupPage from './pages/SignupPage'
 import StudentDashboard from './pages/NewStudentDashboard'
 import ProfilePage from './pages/ProfilePage'
 import QuestionTrackerPage from './pages/QuestionTrackerPage'
-import QuestionDetailPage from './pages/QuestionDetailPage'
+import QuestionDetailPage from './pages/QuestionDetailPageNew'
 import CodeAnalysisPage from './pages/CodeAnalysisPage'
+import LeetCodeTracker from './pages/LeetCodeTracker'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboard from './pages/AdminDashboard'
 import SimpleAdminDashboard from './pages/SimpleAdminDashboard'
@@ -262,6 +263,22 @@ const App: React.FC = () => {
                       transition={{ duration: 0.3 }}
                     >
                       <CodeAnalysisPage />
+                    </motion.div>
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/leetcode-tracker" 
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <LeetCodeTracker />
                     </motion.div>
                   </ProtectedRoute>
                 } 

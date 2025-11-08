@@ -179,7 +179,7 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // @route   POST /api/questions/:id/submit
-// @desc    Submit solution with code and run test cases + AI analysis
+// @desc    Submit solution with AI mentor analysis
 // @access  Private
 router.post('/:id/submit', auth, async (req, res) => {
   try {
@@ -209,25 +209,105 @@ router.post('/:id/submit', auth, async (req, res) => {
       }));
     }
 
-    // Get AI analysis
+    // Build user history from all past submissions
+    const User = require('../models/User');
+    const user = await User.findById(req.user._id);
+    
+    // Get all user's questions with submissions
+    const allUserQuestions = await Question.find({ user: req.user._id });
+    
+    // Build coding history
+    const recentPatterns = [];
+    const commonMistakes = {};
+    const masteredPatterns = {};
+    
+    allUserQuestions.forEach(q => {
+      q.submissions.forEach(sub => {
+        if (sub.aiAnalysis && sub.aiAnalysis.approachDetected) {
+          recentPatterns.push({
+            pattern: sub.aiAnalysis.approachDetected,
+            usedAt: sub.submittedAt,
+            wasOptimal: sub.status === 'passed'
+          });
+          
+          // Track mistakes
+          if (sub.aiAnalysis.weaknesses) {
+            sub.aiAnalysis.weaknesses.forEach(weakness => {
+              commonMistakes[weakness] = (commonMistakes[weakness] || 0) + 1;
+            });
+          }
+          
+          // Track mastered patterns
+          if (sub.status === 'passed' && sub.aiAnalysis.approachDetected) {
+            const pattern = sub.aiAnalysis.approachDetected;
+            masteredPatterns[pattern] = (masteredPatterns[pattern] || 0) + 1;
+          }
+        }
+      });
+    });
+    
+    // Format for AI
+    const userHistory = {
+      recentPatterns: recentPatterns.slice(-10),
+      commonMistakes: Object.entries(commonMistakes).map(([mistake, count]) => ({
+        mistake,
+        count
+      })),
+      masteredPatterns: Object.entries(masteredPatterns)
+        .filter(([_, count]) => count >= 3)
+        .map(([pattern]) => pattern),
+      previousWeakness: user.codingHistory?.previousWeakness || '',
+      attemptCount: question.submissions.length + 1
+    };
+
+    // Get AI mentor analysis
     let aiAnalysis = null;
     try {
-      const aiResponse = await axios.post('http://localhost:8001/api/analyze', {
+      const aiResponse = await axios.post('http://localhost:8001/mentor/analyze', {
         code,
-        language
+        language,
+        problemData: {
+          title: question.title,
+          description: question.description,
+          difficulty: question.difficulty,
+          optimalApproach: question.optimalApproach || 'Unknown',
+          optimalComplexity: question.optimalComplexity || { time: 'O(n)', space: 'O(1)' }
+        },
+        testResults: {
+          passed: testCasesPassed,
+          total: question.testCases.length,
+          details: testResults
+        },
+        userHistory
       });
       
+      const mentorFeedback = aiResponse.data.mentorFeedback;
+      
       aiAnalysis = {
-        score: aiResponse.data.score || 0,
-        timeComplexity: aiResponse.data.complexity?.time || 'Unknown',
-        spaceComplexity: aiResponse.data.complexity?.space || 'Unknown',
-        securityIssues: aiResponse.data.issues?.filter(i => i.category === 'security') || [],
-        performanceIssues: aiResponse.data.issues?.filter(i => i.category === 'performance') || [],
-        codeSmells: aiResponse.data.issues?.filter(i => i.category === 'quality') || [],
-        suggestions: aiResponse.data.suggestions || [],
-        betterApproach: aiResponse.data.betterApproach || '',
-        explanation: aiResponse.data.explanation || ''
+        analysisSummary: mentorFeedback.analysis_summary,
+        approachDetected: mentorFeedback.approach_detected,
+        correctness: mentorFeedback.correctness,
+        timeComplexity: mentorFeedback.time_complexity,
+        spaceComplexity: mentorFeedback.space_complexity,
+        strengths: mentorFeedback.strengths || [],
+        weaknesses: mentorFeedback.weaknesses || [],
+        improvementSuggestions: mentorFeedback.improvement_suggestions || [],
+        nextProblemRecommendation: mentorFeedback.next_problem_recommendation || {},
+        mindsetCoaching: mentorFeedback.mindset_coaching,
+        score: mentorFeedback.correctness ? 80 : 40,
+        suggestions: mentorFeedback.improvement_suggestions || []
       };
+      
+      // Update user's coding history
+      if (user.codingHistory) {
+        user.codingHistory.totalSubmissions = (user.codingHistory.totalSubmissions || 0) + 1;
+        if (mentorFeedback.correctness) {
+          user.codingHistory.optimalSolutions = (user.codingHistory.optimalSolutions || 0) + 1;
+        }
+        user.codingHistory.previousWeakness = mentorFeedback.next_problem_recommendation?.topic || '';
+        await user.save();
+      }
+      
     } catch (aiError) {
       console.error('AI analysis error:', aiError.message);
       // Continue without AI analysis

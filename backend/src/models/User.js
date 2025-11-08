@@ -38,6 +38,26 @@ const userSchema = new mongoose.Schema({
   profilePicUrl: {
     type: String,
     default: null
+  },
+  codingHistory: {
+    recentPatterns: [{
+      pattern: String,
+      usedAt: Date,
+      wasOptimal: Boolean
+    }],
+    commonMistakes: [{
+      mistake: String,
+      count: { type: Number, default: 1 },
+      lastOccurred: Date
+    }],
+    masteredPatterns: [{
+      pattern: String,
+      masteredAt: Date,
+      successRate: Number
+    }],
+    previousWeakness: String,
+    totalSubmissions: { type: Number, default: 0 },
+    optimalSolutions: { type: Number, default: 0 }
   }
 }, {
   timestamps: true
