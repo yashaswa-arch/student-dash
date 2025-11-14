@@ -3,6 +3,7 @@ const router = express.Router();
 const Question = require('../models/Question');
 const { auth } = require('../middleware/auth');
 const axios = require('axios');
+const codeExecutionService = require('../services/codeExecutionService');
 
 // @route   GET /api/questions
 // @desc    Get all questions for logged in user
@@ -199,14 +200,27 @@ router.post('/:id/submit', auth, async (req, res) => {
     let testCasesPassed = 0;
     
     if (question.testCases && question.testCases.length > 0) {
-      // TODO: Integrate with code execution service
-      // For now, mark as placeholder
-      testResults = question.testCases.map(tc => ({
-        input: tc.input,
-        expectedOutput: tc.expectedOutput,
-        actualOutput: 'Execution pending',
-        isPassed: false
-      }));
+      try {
+        const executionResult = await codeExecutionService.submitCode({
+          code,
+          language: language || 'javascript',
+          testCases: question.testCases.map(tc => ({
+            input: tc.input,
+            expectedOutput: tc.expectedOutput
+          }))
+        });
+        
+        testResults = executionResult.testResults || [];
+        testCasesPassed = executionResult.passedTests || 0;
+      } catch (execError) {
+        console.error('Code execution error:', execError);
+        testResults = question.testCases.map(tc => ({
+          input: tc.input,
+          expectedOutput: tc.expectedOutput,
+          actualOutput: 'Execution failed',
+          isPassed: false
+        }));
+      }
     }
 
     // Build user history from all past submissions
@@ -361,22 +375,31 @@ router.post('/:id/run-tests', auth, async (req, res) => {
       return res.status(400).json({ message: 'No test cases available' });
     }
 
-    // TODO: Integrate with actual code execution service
-    // For now, return placeholder results
-    const results = question.testCases.map(tc => ({
-      input: tc.input,
-      expectedOutput: tc.expectedOutput,
-      actualOutput: 'Execution pending',
-      isPassed: false
-    }));
+    try {
+      const executionResult = await codeExecutionService.submitCode({
+        code,
+        language: language || 'javascript',
+        testCases: question.testCases.map(tc => ({
+          input: tc.input,
+          expectedOutput: tc.expectedOutput
+        }))
+      });
 
-    res.json({
-      results,
-      passed: 0,
-      total: question.testCases.length
-    });
+      res.json({
+        results: executionResult.testResults || [],
+        passed: executionResult.passedTests || 0,
+        total: executionResult.totalTests || question.testCases.length,
+        status: executionResult.status
+      });
+    } catch (error) {
+      console.error('Error running tests:', error);
+      res.status(500).json({ 
+        message: 'Code execution failed', 
+        error: error.message 
+      });
+    }
   } catch (error) {
-    console.error('Error running tests:', error);
+    console.error('Error in run-tests route:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });

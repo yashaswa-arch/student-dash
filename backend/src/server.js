@@ -71,13 +71,13 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', require('./routes/adminRoutes'));
-app.use('/api/dev', require('./routes/devRoutes')); // Development only
+app.use('/api/dev', require('./routes/devRoutes'));
 app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/modules', moduleRoutes);
-app.use('/api/questions', questionRoutes); // NEW: Question Tracker
-app.use('/api/leetcode', leetcodeRoutes); // LeetCode Question Tracker
-app.use('/api/coding-questions', codingQuestionRoutes); // OLD: Renamed to avoid conflict
+app.use('/api/questions', questionRoutes);
+app.use('/api/leetcode', leetcodeRoutes);
+app.use('/api/coding-questions', codingQuestionRoutes);
 app.use('/api/attempts', interviewAttemptRoutes);
 app.use('/api/transcripts', transcriptRoutes);
 app.use('/api/code-execution', codeExecutionRoutes);

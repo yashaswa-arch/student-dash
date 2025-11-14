@@ -99,8 +99,6 @@ router.post('/submit', auth, async (req, res) => {
 
     await submission.save();
 
-    console.log(`✅ Code execution completed: ${executionResult.status} (${executionResult.score}%)`);
-
     res.json({
       success: true,
       message: 'Code executed successfully',

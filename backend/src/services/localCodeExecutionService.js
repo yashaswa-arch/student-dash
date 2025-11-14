@@ -27,8 +27,6 @@ class LocalCodeExecutionService {
    */
   async submitCode({ code, language, input = '', expectedOutput = '', testCases = [] }) {
     try {
-      console.log(`🔧 Local execution: ${language}`);
-      
       // Use test cases or create default
       const cases = testCases.length > 0 ? testCases : [{ input, expectedOutput }];
       

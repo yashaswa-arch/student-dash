@@ -79,7 +79,6 @@ class CodeExecutionService {
     try {
       // Check if Judge0 is configured, otherwise use local execution
       if (!isJudge0Configured()) {
-        console.log('⚠️ Judge0 not configured, using local execution');
         return await localCodeExecutionService.submitCode({
           code,
           language,
@@ -121,7 +120,6 @@ class CodeExecutionService {
       
       // If Judge0 fails, try local execution as fallback
       if (error.response || error.request) {
-        console.log('🔄 Judge0 failed, falling back to local execution');
         try {
           return await localCodeExecutionService.submitCode({
             code,

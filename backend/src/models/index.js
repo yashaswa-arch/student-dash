@@ -27,7 +27,7 @@ module.exports = {
   CodingQuestion,
   InterviewAttempt,
   Transcript,
-  Question, // NEW: Question Tracker
+  Question,
   
   // Learning structure models
   Module,
