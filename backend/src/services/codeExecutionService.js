@@ -13,6 +13,10 @@ const JUDGE0_CONFIG = {
   timeout: 30000 // 30 seconds
 };
 
+// Simple startup diagnostics (does NOT log your actual API key)
+console.log('🔧 Judge0 config → URL:', JUDGE0_CONFIG.baseURL);
+console.log('🔧 Judge0 config → API key present:', !!JUDGE0_CONFIG.apiKey);
+
 // Check if Judge0 is configured
 const isJudge0Configured = () => {
   return !!(JUDGE0_CONFIG.apiKey && JUDGE0_CONFIG.apiKey !== '');
@@ -77,8 +81,17 @@ class CodeExecutionService {
     testCases = []
   }) {
     try {
-      // Check if Judge0 is configured, otherwise use local execution
+      // Check if Judge0 is configured, otherwise use local execution (limited languages)
       if (!isJudge0Configured()) {
+        // Local execution service currently supports only JavaScript & Python
+        const localSupported = localCodeExecutionService.getSupportedLanguages();
+        if (!localSupported.includes(language.toLowerCase())) {
+          throw new Error(
+            `Online judge (Judge0) is not configured on this server, so ${language} execution is disabled. ` +
+            `Either configure JUDGE0_URL and JUDGE0_API_KEY in the backend .env, or switch to JavaScript/Python for local execution.`
+          );
+        }
+
         return await localCodeExecutionService.submitCode({
           code,
           language,
@@ -142,10 +155,11 @@ class CodeExecutionService {
    * @private
    */
   async submitSingleExecution({ code, languageId, input, timeLimit, memoryLimit }) {
+    // For RapidAPI Judge0, source_code/stdin should be plain text (no base64)
     const payload = {
-      source_code: Buffer.from(code).toString('base64'),
+      source_code: code,
       language_id: languageId,
-      stdin: input ? Buffer.from(input).toString('base64') : '',
+      stdin: input || '',
       cpu_time_limit: timeLimit,
       memory_limit: memoryLimit,
       wall_time_limit: timeLimit + 2,
@@ -173,11 +187,13 @@ class CodeExecutionService {
 
         // If execution is complete
         if (result.status.id >= 3) {
+          // RapidAPI Judge0 already returns stdout/stderr as plain text
+          // so we just pass them through without base64 decoding.
           return {
             ...result,
-            stdout: result.stdout ? Buffer.from(result.stdout, 'base64').toString() : '',
-            stderr: result.stderr ? Buffer.from(result.stderr, 'base64').toString() : '',
-            compile_output: result.compile_output ? Buffer.from(result.compile_output, 'base64').toString() : ''
+            stdout: result.stdout || '',
+            stderr: result.stderr || '',
+            compile_output: result.compile_output || ''
           };
         }
 

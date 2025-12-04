@@ -3,6 +3,7 @@ const connectDB = require('../config/database');
 const seedUsers = require('./users');
 const seedCourses = require('./courses');
 const seedCodingQuestions = require('./codingQuestions');
+const seedArrayQuestions = require('./arrayQuestions');
 
 // Import new seeders
 const { 
@@ -88,6 +89,7 @@ const runSeeders = async () => {
     await seedUsers();
     await seedCourses();
     await seedCodingQuestions();
+    await seedArrayQuestions();
     
     // Then seed expanded content
     await seedExpandedContent();
@@ -97,6 +99,7 @@ const runSeeders = async () => {
     console.log('   ✓ Users & Authentication');
     console.log('   ✓ Courses & Content Structure');
     console.log('   ✓ Coding Questions & Assessments');
+    console.log('   ✓ Array Practice Questions');
     console.log('   ✓ Modules & Lessons');
     console.log('   ✓ Quizzes & Evaluations');
     console.log('   ✓ Achievement System');

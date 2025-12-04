@@ -18,6 +18,9 @@ const interviewAttemptRoutes = require('./routes/interviewAttemptRoutes');
 const transcriptRoutes = require('./routes/transcriptRoutes');
 const authRoutes = require('./routes/authRoutes');
 const codeExecutionRoutes = require('./routes/codeExecutionRoutes');
+const executeRoutes = require('./routes/executeRoutes');
+const practiceQuestionRoutes = require('./routes/practiceQuestionRoutes');
+const practiceSubmissionRoutes = require('./routes/practiceSubmissionRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const questionRoutes = require('./routes/questionRoutes');
 const leetcodeRoutes = require('./routes/leetcodeRoutes');
@@ -81,6 +84,9 @@ app.use('/api/coding-questions', codingQuestionRoutes);
 app.use('/api/attempts', interviewAttemptRoutes);
 app.use('/api/transcripts', transcriptRoutes);
 app.use('/api/code-execution', codeExecutionRoutes);
+app.use('/api', executeRoutes);
+app.use('/api/practice-questions', practiceQuestionRoutes);
+app.use('/api/submissions', practiceSubmissionRoutes);
 app.use('/api/ai', aiRoutes);
 
 // 404 handler
