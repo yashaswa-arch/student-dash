@@ -488,7 +488,7 @@ const NewStudentDashboard: React.FC = () => {
                       Track questions across LeetCode, CodeForces, etc.
                     </p>
                     <button 
-                      onClick={() => navigate('/questions')}
+                      onClick={() => navigate('/question-tracker')}
                       className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                     >
                       View Tracker

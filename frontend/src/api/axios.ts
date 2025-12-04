@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? 'http://localhost:5000/api' : '/api',
+  baseURL: import.meta.env.MODE === 'development' ? 'http://localhost:5000/api' : '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

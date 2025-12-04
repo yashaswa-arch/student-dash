@@ -2,8 +2,7 @@ import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { motion, AnimatePresence } from 'framer-motion'
-import { setSystemTheme } from './store/slices/themeSlice'
-import { selectResolvedTheme } from './store/slices/themeSlice'
+import { setSystemTheme, selectResolvedTheme } from './store/slices/themeSlice'
 import { selectIsAuthenticated } from './store/slices/authSlice'
 
 // Pages
@@ -31,29 +30,25 @@ const App: React.FC = () => {
   const resolvedTheme = useSelector(selectResolvedTheme)
   const isAuthenticated = useSelector(selectIsAuthenticated)
 
-  // System theme detection
+  // Detect and sync system theme
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    
+
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
       dispatch(setSystemTheme(e.matches ? 'dark' : 'light'))
     }
-    
-    // Set initial system theme
+
     dispatch(setSystemTheme(mediaQuery.matches ? 'dark' : 'light'))
-    
-    // Listen for system theme changes
     mediaQuery.addEventListener('change', handleSystemThemeChange)
-    
+
     return () => {
       mediaQuery.removeEventListener('change', handleSystemThemeChange)
     }
   }, [dispatch])
 
-  // Apply theme to document
+  // Apply theme class to <html>
   useEffect(() => {
     const root = document.documentElement
-    
     if (resolvedTheme === 'dark') {
       root.classList.add('dark')
     } else {
@@ -68,8 +63,8 @@ const App: React.FC = () => {
           <AnimatePresence mode="wait">
             <Routes>
               {/* Public Routes */}
-              <Route 
-                path="/" 
+              <Route
+                path="/"
                 element={
                   isAuthenticated ? (
                     <Navigate to="/dashboard" replace />
@@ -83,11 +78,11 @@ const App: React.FC = () => {
                       <LandingPage />
                     </motion.div>
                   )
-                } 
+                }
               />
-              
-              <Route 
-                path="/login" 
+
+              <Route
+                path="/login"
                 element={
                   isAuthenticated ? (
                     <Navigate to="/dashboard" replace />
@@ -101,11 +96,11 @@ const App: React.FC = () => {
                       <LoginPage />
                     </motion.div>
                   )
-                } 
+                }
               />
-              
-              <Route 
-                path="/signup" 
+
+              <Route
+                path="/signup"
                 element={
                   isAuthenticated ? (
                     <Navigate to="/dashboard" replace />
@@ -119,12 +114,12 @@ const App: React.FC = () => {
                       <SignupPage />
                     </motion.div>
                   )
-                } 
+                }
               />
 
               {/* Admin Routes */}
-              <Route 
-                path="/admin/login" 
+              <Route
+                path="/admin/login"
                 element={
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -134,11 +129,11 @@ const App: React.FC = () => {
                   >
                     <AdminLoginPage />
                   </motion.div>
-                } 
+                }
               />
 
-              <Route 
-                path="/admin/dashboard" 
+              <Route
+                path="/admin/dashboard"
                 element={
                   <AdminProtectedRoute>
                     <motion.div
@@ -150,19 +145,14 @@ const App: React.FC = () => {
                       <AdminDashboard />
                     </motion.div>
                   </AdminProtectedRoute>
-                } 
+                }
               />
 
-              <Route 
-                path="/admin/simple-dashboard" 
-                element={
-                  <SimpleAdminDashboard />
-                } 
-              />
+              <Route path="/admin/simple-dashboard" element={<SimpleAdminDashboard />} />
 
               {/* Protected Routes */}
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <motion.div
@@ -174,11 +164,11 @@ const App: React.FC = () => {
                       <StudentDashboard />
                     </motion.div>
                   </ProtectedRoute>
-                } 
+                }
               />
 
-              <Route 
-                path="/profile" 
+              <Route
+                path="/profile"
                 element={
                   <ProtectedRoute>
                     <motion.div
@@ -190,11 +180,12 @@ const App: React.FC = () => {
                       <ProfilePage />
                     </motion.div>
                   </ProtectedRoute>
-                } 
+                }
               />
 
-              <Route 
-                path="/questions" 
+              {/* Old alias for tracker (kept for compatibility) */}
+              <Route
+                path="/questions"
                 element={
                   <ProtectedRoute>
                     <motion.div
@@ -206,11 +197,28 @@ const App: React.FC = () => {
                       <QuestionTrackerPage />
                     </motion.div>
                   </ProtectedRoute>
-                } 
+                }
               />
 
-              <Route 
-                path="/questions/:id" 
+              {/* New analytics Question Tracker route */}
+              <Route
+                path="/question-tracker"
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <QuestionTrackerPage />
+                    </motion.div>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/questions/:id"
                 element={
                   <ProtectedRoute>
                     <motion.div
@@ -222,11 +230,11 @@ const App: React.FC = () => {
                       <QuestionDetailPage />
                     </motion.div>
                   </ProtectedRoute>
-                } 
+                }
               />
 
-              <Route 
-                path="/code-analysis" 
+              <Route
+                path="/code-analysis"
                 element={
                   <ProtectedRoute>
                     <motion.div
@@ -238,11 +246,11 @@ const App: React.FC = () => {
                       <CodeAnalysisPage />
                     </motion.div>
                   </ProtectedRoute>
-                } 
+                }
               />
 
-              <Route 
-                path="/leetcode-tracker" 
+              <Route
+                path="/leetcode-tracker"
                 element={
                   <ProtectedRoute>
                     <motion.div
@@ -254,11 +262,11 @@ const App: React.FC = () => {
                       <LeetCodeTracker />
                     </motion.div>
                   </ProtectedRoute>
-                } 
+                }
               />
 
-              <Route 
-                path="/quick-practice" 
+              <Route
+                path="/quick-practice"
                 element={
                   <ProtectedRoute>
                     <motion.div
@@ -270,7 +278,7 @@ const App: React.FC = () => {
                       <QuickPracticePage />
                     </motion.div>
                   </ProtectedRoute>
-                } 
+                }
               />
 
               {/* Catch all route */}
@@ -284,3 +292,5 @@ const App: React.FC = () => {
 }
 
 export default App
+
+
