@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { Play, Loader2, Code2, AlertCircle, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 import api from '../api/axios';
+import type { RootState } from '../store';
+import { practiceSubmissionAPI } from '../api/services';
 
 type Language = 'java' | 'cpp' | 'python' | 'javascript';
 
@@ -59,6 +63,8 @@ solve();`
 };
 
 const QuickPracticePage: React.FC = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
+
   const [language, setLanguage] = useState<Language>('java');
   const [code, setCode] = useState<string>(LANGUAGE_TEMPLATES.java);
   const [output, setOutput] = useState<ExecutionResult | null>(null);
@@ -68,8 +74,13 @@ const QuickPracticePage: React.FC = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<PracticeQuestion | null>(null);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
   const [questionError, setQuestionError] = useState<string | null>(null);
-  const consoleLogRef = useRef<string[]>([]);
   const originalConsoleLogRef = useRef<typeof console.log | null>(null);
+  const [practiceStartTime, setPracticeStartTime] = useState<Date | null>(null);
+
+  // Track when user starts practicing current question
+  useEffect(() => {
+    setPracticeStartTime(new Date());
+  }, []);
 
   const goToQuestionByOffset = (offset: number) => {
     if (!selectedQuestion || questions.length === 0) return;
@@ -80,6 +91,7 @@ const QuickPracticePage: React.FC = () => {
     if (nextIndex < 0 || nextIndex >= questions.length) return;
 
     setSelectedQuestion(questions[nextIndex]);
+    setPracticeStartTime(new Date());
   };
 
   const handlePrevQuestion = () => goToQuestionByOffset(-1);
@@ -99,14 +111,14 @@ const QuickPracticePage: React.FC = () => {
         if (Array.isArray(data) && data.length > 0) {
           setQuestions(data);
           setSelectedQuestion(data[0]);
+          setPracticeStartTime(new Date());
         } else {
           setQuestions([]);
         }
       } catch (error: any) {
         console.error('Error fetching practice questions:', error);
         setQuestionError(
-          error.response?.data?.message ||
-          'Failed to load practice questions'
+          error.response?.data?.message || 'Failed to load practice questions'
         );
       } finally {
         setIsLoadingQuestions(false);
@@ -127,25 +139,67 @@ const QuickPracticePage: React.FC = () => {
     setOutput(null);
   }, [language, selectedQuestion]);
 
+  const autoSaveSubmission = async (result: ExecutionResult) => {
+    if (!user || !user._id) return;
+    if (!selectedQuestion) return;
+    if (result.status !== 'success') return;
+
+    // Derive topics and time taken from question + timer
+    const mainTopic = (selectedQuestion.topic || '').trim() || 'Arrays';
+    const topics = [mainTopic];
+
+    let timeTakenInMinutes: number | undefined;
+    if (practiceStartTime) {
+      const diffMs = Date.now() - practiceStartTime.getTime();
+      const minutes = Math.max(1, Math.round(diffMs / 60000));
+      if (Number.isFinite(minutes)) {
+        timeTakenInMinutes = minutes;
+      }
+    }
+
+    try {
+      await practiceSubmissionAPI.create({
+        userId: user._id,
+        questionId: selectedQuestion._id,
+        questionTitle: selectedQuestion.title,
+        topics,
+        difficulty: selectedQuestion.difficulty,
+        language,
+        code,
+        stdout: result.stdout,
+        stderr: result.stderr,
+        status: result.status,
+        timeTakenInMinutes,
+        source: 'quick-practice'
+      });
+      toast.success('Saved to Question Tracker');
+    } catch (error: any) {
+      console.error('Error saving practice submission:', error);
+      toast.error(error.response?.data?.message || 'Could not save to Question Tracker');
+    }
+  };
+
   // Execute JavaScript client-side
-  const executeJavaScript = (code: string): ExecutionResult => {
+  const executeJavaScript = (userCode: string): ExecutionResult => {
     const logs: string[] = [];
-    
+
     // Save original console.log
     originalConsoleLogRef.current = console.log;
-    
+
     // Override console.log to capture output
     console.log = (...args: any[]) => {
-      const message = args.map(arg => {
-        if (typeof arg === 'object') {
-          try {
-            return JSON.stringify(arg, null, 2);
-          } catch {
-            return String(arg);
+      const message = args
+        .map((arg) => {
+          if (typeof arg === 'object') {
+            try {
+              return JSON.stringify(arg, null, 2);
+            } catch {
+              return String(arg);
+            }
           }
-        }
-        return String(arg);
-      }).join(' ');
+          return String(arg);
+        })
+        .join(' ');
       logs.push(message);
       // Also call original console.log for debugging
       if (originalConsoleLogRef.current) {
@@ -157,12 +211,13 @@ const QuickPracticePage: React.FC = () => {
       // Execute code in a safe context
       const wrappedCode = `
         (function() {
-          ${code}
+          ${userCode}
         })();
       `;
-      
+
+      // eslint-disable-next-line no-new-func
       new Function(wrappedCode)();
-      
+
       return {
         stdout: logs.join('\n') || 'Code executed successfully (no output)',
         stderr: '',
@@ -201,6 +256,9 @@ const QuickPracticePage: React.FC = () => {
       if (language === 'javascript') {
         const result = executeJavaScript(code);
         setOutput(result);
+        if (result.status === 'success') {
+          await autoSaveSubmission(result);
+        }
         setIsRunning(false);
         return;
       }
@@ -214,11 +272,15 @@ const QuickPracticePage: React.FC = () => {
 
       if (response.data.success) {
         const result = response.data.data;
-        setOutput({
+        const executionResult: ExecutionResult = {
           stdout: result.stdout || result.runtimeOutput || '',
           stderr: result.stderr || result.compilationOutput || result.runtimeOutput || '',
           status: result.status === 'accepted' || result.status === 'success' ? 'success' : 'error'
-        });
+        };
+        setOutput(executionResult);
+        if (executionResult.status === 'success') {
+          await autoSaveSubmission(executionResult);
+        }
       } else {
         setOutput({
           stdout: '',
@@ -262,7 +324,7 @@ const QuickPracticePage: React.FC = () => {
                 <option value="python">Python</option>
                 <option value="javascript">JavaScript</option>
               </select>
-              
+
               {/* Run Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -319,7 +381,10 @@ const QuickPracticePage: React.FC = () => {
                     return (
                       <button
                         key={q._id}
-                        onClick={() => setSelectedQuestion(q)}
+                        onClick={() => {
+                          setSelectedQuestion(q);
+                          setPracticeStartTime(new Date());
+                        }}
                         className={`w-full text-left px-3 py-2 rounded-lg border text-sm transition-colors ${
                           isActive
                             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-100'
@@ -486,9 +551,13 @@ const QuickPracticePage: React.FC = () => {
                     ) : (
                       <AlertCircle className="w-4 h-4 text-red-500" />
                     )}
-                    <span className={`text-xs font-medium ${
-                      output.status === 'success' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                    }`}>
+                    <span
+                      className={`text-xs font-medium ${
+                        output.status === 'success'
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-red-600 dark:text-red-400'
+                      }`}
+                    >
                       {output.status === 'success' ? 'Success' : 'Error'}
                     </span>
                   </div>
@@ -513,7 +582,7 @@ const QuickPracticePage: React.FC = () => {
                         </pre>
                       </div>
                     )}
-                    
+
                     {/* Stderr */}
                     {output.stderr && (
                       <div>
@@ -537,4 +606,3 @@ const QuickPracticePage: React.FC = () => {
 };
 
 export default QuickPracticePage;
-

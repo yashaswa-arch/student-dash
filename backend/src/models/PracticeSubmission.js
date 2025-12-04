@@ -11,6 +11,18 @@ const practiceSubmissionSchema = new mongoose.Schema(
       required: true,
       ref: 'PracticeQuestion'
     },
+    // Optional denormalized question metadata
+    questionTitle: {
+      type: String
+    },
+    topics: {
+      type: [String],
+      default: []
+    },
+    difficulty: {
+      type: String,
+      enum: ['Easy', 'Medium', 'Hard']
+    },
     language: {
       type: String,
       required: true
@@ -31,6 +43,14 @@ const practiceSubmissionSchema = new mongoose.Schema(
       type: String,
       enum: ['success', 'error'],
       required: true
+    },
+    // Optional metadata about where the submission came from
+    source: {
+      type: String,
+      default: 'quick-practice'
+    },
+    timeTakenInMinutes: {
+      type: Number
     }
   },
   {
@@ -39,9 +59,17 @@ const practiceSubmissionSchema = new mongoose.Schema(
   }
 );
 
-practiceSubmissionSchema.index({ userId: 1, questionId: 1, language: 1, createdAt: -1 });
+practiceSubmissionSchema.index({
+  userId: 1,
+  questionId: 1,
+  language: 1,
+  createdAt: -1
+});
 
-const PracticeSubmission = mongoose.model('PracticeSubmission', practiceSubmissionSchema);
+const PracticeSubmission = mongoose.model(
+  'PracticeSubmission',
+  practiceSubmissionSchema
+);
 
 module.exports = PracticeSubmission;
 

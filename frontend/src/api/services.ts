@@ -163,6 +163,29 @@ export const aiAPI = {
   }
 }
 
+// Practice submission API functions
+export interface PracticeSubmissionPayload {
+  userId: string
+  questionId: string
+  questionTitle: string
+  topics: string[]
+  difficulty: 'Easy' | 'Medium' | 'Hard'
+  language: string
+  code: string
+  stdout: string
+  stderr: string
+  status: 'success' | 'error'
+  timeTakenInMinutes?: number
+  source?: string
+}
+
+export const practiceSubmissionAPI = {
+  create: async (payload: PracticeSubmissionPayload) => {
+    const response = await api.post('/submissions', payload)
+    return response.data
+  },
+}
+
 // Admin API functions
 export const adminAPI = {
   // Admin login
