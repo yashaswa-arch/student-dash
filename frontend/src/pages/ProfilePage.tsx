@@ -15,14 +15,9 @@ import {
   CheckCircle2,
   Zap,
   Star,
-  GitBranch,
   Calendar,
   Trophy,
-  BarChart3,
-  PieChart,
-  Users,
-  Eye,
-  ThumbsUp
+  BarChart3
 } from 'lucide-react'
 
 const ProfilePage: React.FC = () => {

@@ -19,6 +19,9 @@ import QuickPracticePage from './pages/QuickPracticePage'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboard from './pages/AdminDashboard'
 import SimpleAdminDashboard from './pages/SimpleAdminDashboard'
+import AptitudeHome from './pages/AptitudeHome'
+import AptitudeQuiz from './pages/AptitudeQuiz'
+import AptitudeResult from './pages/AptitudeResult'
 
 // Components
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -58,7 +61,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <Router future={{ v7_relativeSplatPath: true }}>
+      <Router>
         <div className="min-h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-300">
           <AnimatePresence mode="wait">
             <Routes>
@@ -281,6 +284,54 @@ const App: React.FC = () => {
                 }
               />
 
+              <Route
+                path="/aptitude"
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <AptitudeHome />
+                    </motion.div>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/aptitude/quiz"
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <AptitudeQuiz />
+                    </motion.div>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/aptitude/result"
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <AptitudeResult />
+                    </motion.div>
+                  </ProtectedRoute>
+                }
+              />
+
               {/* Catch all route */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
@@ -292,5 +343,7 @@ const App: React.FC = () => {
 }
 
 export default App
+
+
 
 

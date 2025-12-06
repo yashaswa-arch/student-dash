@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { Canvas } from '@react-three/fiber'
 import { Float, Box, Sphere } from '@react-three/drei'
 import { Shield, Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react'
-import { AppDispatch } from '../store'
 import { adminAPI } from '../api/services'
 
 // 3D Admin Background
@@ -42,7 +40,6 @@ const AdminLoginPage = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
 
   // Check if admin is already logged in

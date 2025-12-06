@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
 import api from '../api/axios'
+import { aptitudeAPI, AptitudeStats } from '../api/services'
 import {
   Activity,
   AlertCircle,
@@ -12,6 +13,7 @@ import {
   Loader2,
   PieChart as PieChartIcon,
   Table as TableIcon,
+  BookOpen,
 } from 'lucide-react'
 import {
   ResponsiveContainer,
@@ -64,6 +66,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 
 const QuestionTrackerPage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user)
+  const [activeTab, setActiveTab] = useState<'coding' | 'aptitude'>('coding')
 
   const [overview, setOverview] = useState<OverviewStats | null>(null)
   const [overviewLoading, setOverviewLoading] = useState(false)
@@ -83,6 +86,15 @@ const QuestionTrackerPage: React.FC = () => {
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
   const [total, setTotal] = useState(0)
+
+  // Aptitude-specific state (separate from coding tracker)
+  const [aptitudeTopicStats, setAptitudeTopicStats] = useState<any[]>([])
+  const [aptitudeTopicStatsLoading, setAptitudeTopicStatsLoading] = useState(false)
+  const [aptitudeTopicStatsError, setAptitudeTopicStatsError] = useState<string | null>(null)
+
+  const [aptitudeRecentAttempts, setAptitudeRecentAttempts] = useState<any[]>([])
+  const [aptitudeRecentLoading, setAptitudeRecentLoading] = useState(false)
+  const [aptitudeRecentError, setAptitudeRecentError] = useState<string | null>(null)
 
   const [filterTopic, setFilterTopic] = useState<string>('all')
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
@@ -161,6 +173,43 @@ const QuestionTrackerPage: React.FC = () => {
     fetchByDifficulty()
   }, [user?._id])
 
+  // Fetch aptitude data only when aptitude tab is active
+  useEffect(() => {
+    if (!user?._id || activeTab !== 'aptitude') return
+
+    const fetchAptitudeTopicStats = async () => {
+      try {
+        setAptitudeTopicStatsLoading(true)
+        setAptitudeTopicStatsError(null)
+        const response = await api.get('/aptitude/stats/summary')
+        const topics = response.data.topics || response.data.data || []
+        setAptitudeTopicStats(topics)
+      } catch (error: any) {
+        console.error('Error fetching aptitude topic stats:', error)
+        setAptitudeTopicStatsError(error.response?.data?.message || 'Failed to load aptitude stats')
+      } finally {
+        setAptitudeTopicStatsLoading(false)
+      }
+    }
+
+    const fetchAptitudeRecentAttempts = async () => {
+      try {
+        setAptitudeRecentLoading(true)
+        setAptitudeRecentError(null)
+        const attempts = await aptitudeAPI.getRecentAttempts()
+        setAptitudeRecentAttempts(attempts)
+      } catch (error: any) {
+        console.error('Error fetching recent aptitude attempts:', error)
+        setAptitudeRecentError(error.response?.data?.message || 'Failed to load recent attempts')
+      } finally {
+        setAptitudeRecentLoading(false)
+      }
+    }
+
+    fetchAptitudeTopicStats()
+    fetchAptitudeRecentAttempts()
+  }, [user?._id, activeTab])
+
   useEffect(() => {
     if (!user?._id) return
 
@@ -215,6 +264,25 @@ const QuestionTrackerPage: React.FC = () => {
     })
   }
 
+  const formatDate = (iso: string) => {
+    const d = new Date(iso)
+    return d.toLocaleDateString(undefined, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+  }
+
+  const getAptitudeStatus = (scorePercent: number): { label: string; icon: string; className: string } => {
+    if (scorePercent >= 75) {
+      return { label: 'Strong', icon: '✅', className: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' }
+    } else if (scorePercent >= 50) {
+      return { label: 'Average', icon: '⚠️', className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' }
+    } else {
+      return { label: 'Weak', icon: '❌', className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' }
+    }
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-900">
@@ -256,7 +324,42 @@ const QuestionTrackerPage: React.FC = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Overview cards */}
+        {/* Tabs */}
+        <div className="bg-white dark:bg-dark-800 rounded-xl shadow-lg border border-gray-200 dark:border-dark-700 overflow-hidden">
+          <div className="flex border-b border-gray-200 dark:border-dark-700">
+            <button
+              onClick={() => setActiveTab('coding')}
+              className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                activeTab === 'coding'
+                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Code2 size={18} />
+                Coding Practice
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('aptitude')}
+              className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                activeTab === 'aptitude'
+                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <BookOpen size={18} />
+                Aptitude Quizzes
+              </div>
+            </button>
+          </div>
+
+          <div className="p-6">
+            {activeTab === 'coding' ? (
+              <>
+                {/* Coding Practice Content */}
+                {/* Overview cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Solved */}
           <div className="bg-white dark:bg-dark-800 rounded-xl border border-gray-200 dark:border-dark-700 p-4 flex items-center justify-between">
@@ -491,7 +594,7 @@ const QuestionTrackerPage: React.FC = () => {
           </div>
       </div>
 
-        {/* Submissions table + filters */}
+                {/* Submissions table + filters */}
         <div className="bg-white dark:bg-dark-800 rounded-xl border border-gray-200 dark:border-dark-700">
           <div className="px-4 py-3 border-b border-gray-200 dark:border-dark-700 flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-2">
@@ -723,12 +826,185 @@ const QuestionTrackerPage: React.FC = () => {
                       </div>
                   </div>
                 </div>
+              </>
+            ) : (
+              <>
+                {/* Aptitude Quizzes Content */}
+                {/* Topic-wise Stats Table */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <TableIcon className="w-4 h-4 text-blue-500" />
+                    <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      Topic-wise Statistics
+                    </h2>
+                  </div>
+
+                  {aptitudeTopicStatsLoading ? (
+                    <div className="py-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+                      <Loader2 className="w-5 h-5 mr-2 inline-block animate-spin" />
+                      Loading topic stats...
+                    </div>
+                  ) : aptitudeTopicStatsError ? (
+                    <div className="py-6 text-center text-xs text-red-600 dark:text-red-300 flex flex-col items-center gap-2">
+                      <AlertCircle className="w-5 h-5" />
+                      <span>{aptitudeTopicStatsError}</span>
+                    </div>
+                  ) : aptitudeTopicStats.length === 0 || aptitudeTopicStats.every((s: any) => s.attemptsCount === 0) ? (
+                    <div className="py-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+                      <BookOpen className="w-6 h-6 mx-auto mb-2 opacity-60" />
+                      <p>No aptitude quiz attempts yet. Start practicing to see your stats here.</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-700 text-xs">
+                        <thead className="bg-gray-50 dark:bg-dark-800">
+                          <tr>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Topic
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Attempts
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Average Score (%)
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Best Score (%)
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Last Attempt Date
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-dark-700 bg-white dark:bg-dark-800">
+                          {aptitudeTopicStats.map((stat: any) => (
+                            <tr key={stat.topic} className="hover:bg-gray-50 dark:hover:bg-dark-700/60">
+                              <td className="px-3 py-2 text-gray-900 dark:text-white font-medium">
+                                {stat.topic}
+                              </td>
+                              <td className="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                {stat.attemptsCount || 0}
+                              </td>
+                              <td className="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                {stat.avgScorePercent !== undefined && stat.avgScorePercent !== null
+                                  ? `${stat.avgScorePercent.toFixed(1)}%`
+                                  : stat.averagePercentage !== undefined
+                                  ? `${stat.averagePercentage.toFixed(1)}%`
+                                  : '0%'}
+                              </td>
+                              <td className="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                {stat.bestScorePercent !== undefined && stat.bestScorePercent !== null
+                                  ? `${stat.bestScorePercent}%`
+                                  : '-'}
+                              </td>
+                              <td className="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                {stat.lastAttemptDate
+                                  ? formatDate(stat.lastAttemptDate)
+                                  : stat.lastAttemptDate === null || stat.attemptsCount === 0
+                                  ? '-'
+                                  : '-'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
+
+                {/* Recent Attempts Table */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <TableIcon className="w-4 h-4 text-blue-500" />
+                    <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      Recent Attempts
+                    </h2>
+                  </div>
+
+                  {aptitudeRecentLoading ? (
+                    <div className="py-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+                      <Loader2 className="w-5 h-5 mr-2 inline-block animate-spin" />
+                      Loading recent attempts...
+                    </div>
+                  ) : aptitudeRecentError ? (
+                    <div className="py-6 text-center text-xs text-red-600 dark:text-red-300 flex flex-col items-center gap-2">
+                      <AlertCircle className="w-5 h-5" />
+                      <span>{aptitudeRecentError}</span>
+                    </div>
+                  ) : aptitudeRecentAttempts.length === 0 ? (
+                    <div className="py-10 text-center text-gray-500 dark:text-gray-400 text-sm">
+                      <BookOpen className="w-6 h-6 mx-auto mb-2 opacity-60" />
+                      <p>No recent attempts found.</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-700 text-xs">
+                        <thead className="bg-gray-50 dark:bg-dark-800">
+                          <tr>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Date
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Topic
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Score (%)
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Correct / Total
+                            </th>
+                            <th className="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100 dark:divide-dark-700 bg-white dark:bg-dark-800">
+                          {aptitudeRecentAttempts.map((attempt: any) => {
+                            const status = getAptitudeStatus(attempt.scorePercent)
+                            return (
+                              <tr key={attempt._id} className="hover:bg-gray-50 dark:hover:bg-dark-700/60">
+                                <td className="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                  {formatDateTime(attempt.createdAt || attempt.completedAt)}
+                                </td>
+                                <td className="px-3 py-2 text-gray-900 dark:text-white">
+                                  {attempt.topic}
+                                </td>
+                                <td className="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                  {attempt.scorePercent}%
+                                </td>
+                                <td className="px-3 py-2 text-gray-700 dark:text-gray-200">
+                                  {attempt.correctCount || 0} / {attempt.totalQuestions || 0}
+                                </td>
+                                <td className="px-3 py-2">
+                                  <span
+                                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${status.className}`}
+                                  >
+                                    <span className="mr-1">{status.icon}</span>
+                                    {status.label}
+                                  </span>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
 
 export default QuestionTrackerPage
+
+
+
+
 
 
 

@@ -236,3 +236,92 @@ export const adminAPI = {
     return response.data
   }
 }
+
+// Aptitude API interfaces
+export interface AptitudeQuestion {
+  _id: string
+  topic: string
+  questionText: string
+  options: string[]
+  difficulty: 'easy' | 'medium' | 'hard'
+}
+
+export interface AptitudeAnswer {
+  questionId: string
+  selectedIndex: number
+}
+
+export interface AptitudeAttemptResponse {
+  _id: string
+  topic: string
+  difficulty: string
+  numQuestions: number
+  score: number
+  percentage: number
+  completedAt: string
+  answers: Array<{
+    questionId: string
+    questionText: string
+    options: string[]
+    correctIndex: number
+    selectedIndex: number
+    isCorrect: boolean
+    explanation: string
+  }>
+}
+
+export interface AptitudeStats {
+  topic: string
+  attempts: number
+  averageScore: number
+  averagePercentage: number
+}
+
+// Aptitude API functions
+export const aptitudeAPI = {
+  // Get available topics
+  getTopics: async (): Promise<string[]> => {
+    const response = await api.get('/aptitude/topics')
+    return response.data.data
+  },
+
+  // Get questions by topic, difficulty, and count
+  getQuestions: async (
+    topic: string,
+    difficulty: 'easy' | 'medium' | 'hard',
+    count: 10 | 20
+  ): Promise<AptitudeQuestion[]> => {
+    const response = await api.get('/aptitude/questions', {
+      params: { topic, difficulty, count }
+    })
+    return response.data.data
+  },
+
+  // Submit attempt (creates and evaluates in one call)
+  submitAttempt: async (
+    topic: string,
+    difficulty: 'easy' | 'medium' | 'hard',
+    numQuestions: 10 | 20,
+    answers: AptitudeAnswer[]
+  ): Promise<AptitudeAttemptResponse> => {
+    const response = await api.post('/aptitude/attempts', {
+      topic,
+      difficulty,
+      numQuestions,
+      answers
+    })
+    return response.data.data
+  },
+
+  // Get recent attempts (uses authenticated user)
+  getRecentAttempts: async (): Promise<any[]> => {
+    const response = await api.get('/aptitude/attempts/recent')
+    return response.data.attempts || response.data.data || []
+  },
+
+  // Get stats summary (uses authenticated user)
+  getStatsSummary: async (): Promise<any[]> => {
+    const response = await api.get('/aptitude/stats/summary')
+    return response.data.topics || response.data.data || []
+  }
+}

@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '../store'
+import { RootState, AppDispatch } from '../store'
 import { logoutUser } from '../store/slices/authSlice'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Code2, 
   TrendingUp, 
   Target, 
-  Award, 
   Calendar,
   Github,
   Activity,
   Zap,
   CheckCircle2,
-  Clock,
   Trophy,
   Flame,
   User,
@@ -26,7 +24,7 @@ import {
 
 const NewStudentDashboard: React.FC = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const user = useSelector((state: RootState) => state.auth.user)
   const [activeTab, setActiveTab] = useState<'practice' | 'analytics' | 'contests' | 'github'>('practice')
   const [showProfileDropdown, setShowProfileDropdown] = useState(false)
@@ -85,7 +83,7 @@ const NewStudentDashboard: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await dispatch(logoutUser()).unwrap()
+      await dispatch(logoutUser())
       navigate('/login')
     } catch (error) {
       console.error('Logout failed:', error)
@@ -506,14 +504,17 @@ const NewStudentDashboard: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Recent Activity */}
+                  {/* Aptitude Prep */}
                   <div className="border border-gray-200 dark:border-dark-600 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Recent Activity</h4>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Aptitude Prep</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      View your latest submissions and feedback
+                      Practice topic-wise aptitude questions with detailed explanations
                     </p>
-                    <button className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
-                      View Activity
+                    <button
+                      onClick={() => navigate('/aptitude')}
+                      className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                    >
+                      Start Practice
                     </button>
                   </div>
                 </div>

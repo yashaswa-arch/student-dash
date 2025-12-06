@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import {
@@ -7,8 +7,10 @@ import {
   XCircle,
   Code,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Loader2
 } from 'lucide-react';
+import api from '../api/axios';
 
 interface Submission {
   _id: string;
@@ -32,14 +34,50 @@ interface Submission {
 }
 
 interface Props {
-  submissions: Submission[];
-  onViewDetails: (submission: Submission) => void;
+  submissions?: Submission[];
+  onViewDetails?: (submission: Submission) => void;
+  questionId?: string;
 }
 
-const SubmissionHistory: React.FC<Props> = ({ submissions, onViewDetails }) => {
+const SubmissionHistory: React.FC<Props> = ({ submissions: propSubmissions, onViewDetails, questionId }) => {
+  const [submissions, setSubmissions] = useState<Submission[]>(propSubmissions || []);
+  const [loading, setLoading] = useState(!!questionId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'passed' | 'failed'>('all');
   const [sortBy, setSortBy] = useState<'recent' | 'score'>('recent');
+
+  useEffect(() => {
+    if (questionId) {
+      fetchSubmissions();
+    } else if (propSubmissions) {
+      setSubmissions(propSubmissions);
+    }
+  }, [questionId, propSubmissions]);
+
+  const fetchSubmissions = async () => {
+    if (!questionId) return;
+    try {
+      setLoading(true);
+      const response = await api.get(`/submissions/list`, {
+        params: { questionId }
+      });
+      setSubmissions(response.data.data || []);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      setSubmissions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewDetails = (submission: Submission) => {
+    if (onViewDetails) {
+      onViewDetails(submission);
+    } else {
+      // Default behavior: expand/collapse
+      setExpandedId(expandedId === submission._id ? null : submission._id);
+    }
+  };
 
   const filteredSubmissions = submissions
     .filter(sub => {
@@ -70,6 +108,14 @@ const SubmissionHistory: React.FC<Props> = ({ submissions, onViewDetails }) => {
     if (score >= 40) return 'text-yellow-600';
     return 'text-red-600';
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -245,19 +291,16 @@ const SubmissionHistory: React.FC<Props> = ({ submissions, onViewDetails }) => {
                       )}
 
                       {/* Action Buttons */}
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => onViewDetails(submission)}
-                          className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
-                        >
-                          View Full Analysis
-                        </button>
-                        <button
-                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors"
-                        >
-                          View Code
-                        </button>
-                      </div>
+                      {onViewDetails && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewDetails(submission)}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                          >
+                            View Full Analysis
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}

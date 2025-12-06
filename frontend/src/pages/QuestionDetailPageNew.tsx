@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store'
 import { motion } from 'framer-motion'
-import axios from 'axios'
+import api from '../api/axios'
 import Editor from '@monaco-editor/react'
 import { 
   ArrowLeft, 
   ExternalLink, 
   Edit2, 
   Star,
-  Calendar,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   Code2,
-  Play,
   Send,
   History
 } from 'lucide-react'
@@ -74,7 +67,6 @@ interface MentorAnalysis {
 const QuestionDetailPageNew: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const user = useSelector((state: RootState) => state.auth.user)
   const [question, setQuestion] = useState<Question | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'problem' | 'submissions'>('problem')
@@ -103,10 +95,7 @@ const QuestionDetailPageNew: React.FC = () => {
 
   const fetchQuestion = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.get(`http://localhost:5000/api/questions/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await api.get(`/questions/${id}`)
       setQuestion(response.data)
     } catch (error) {
       console.error('Error fetching question:', error)
@@ -144,11 +133,9 @@ const QuestionDetailPageNew: React.FC = () => {
 
     setSubmitting(true)
     try {
-      const token = localStorage.getItem('token')
-      const response = await axios.post(
-        `http://localhost:5000/api/questions/${id}/submit`,
-        { code, language },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await api.post(
+        `/questions/${id}/submit`,
+        { code, language }
       )
 
       console.log('Submit response:', response.data)

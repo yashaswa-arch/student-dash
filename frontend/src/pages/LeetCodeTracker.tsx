@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store';
-import axios from 'axios';
+import api from '../api/axios';
 import { motion } from 'framer-motion';
 import Editor from '@monaco-editor/react';
 import {
@@ -61,10 +59,7 @@ const LeetCodeTracker: React.FC = () => {
 
   const fetchSavedQuestions = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/leetcode/questions', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/leetcode/questions');
       setSavedQuestions(response.data.questions);
     } catch (error) {
       console.error('Error fetching saved questions:', error);
@@ -79,11 +74,9 @@ const LeetCodeTracker: React.FC = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:5000/api/leetcode/fetch',
-        { url },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const response = await api.post(
+        '/leetcode/fetch',
+        { url }
       );
 
       const problemData = response.data.problem;
@@ -109,16 +102,14 @@ const LeetCodeTracker: React.FC = () => {
 
     setAnalyzing(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:5000/api/leetcode/analyze',
+      const response = await api.post(
+        '/leetcode/analyze',
         {
           code,
           language,
           problemTitle: problem?.title || 'Unknown',
           problemDescription: problem?.description || ''
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
 
       setFeedback(response.data.feedback);
@@ -138,9 +129,8 @@ const LeetCodeTracker: React.FC = () => {
 
     setSaving(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5000/api/leetcode/save',
+      await api.post(
+        '/leetcode/save',
         {
           title: problem.title,
           problemUrl: problem.problemUrl,
@@ -151,8 +141,7 @@ const LeetCodeTracker: React.FC = () => {
           aiFeedback: feedback,
           userNotes: notes,
           status
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
 
       alert('✅ Question saved successfully!');

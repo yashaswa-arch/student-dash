@@ -8,20 +8,13 @@ import {
   UserCheck, 
   UserX, 
   Shield, 
-  BarChart3, 
-  Activity, 
-  Settings, 
   LogOut, 
   Search,
-  Filter,
-  MoreVertical,
   Edit,
   Trash2,
   Eye,
-  AlertTriangle,
   TrendingUp,
   BookOpen,
-  Clock,
   Home
 } from 'lucide-react'
 import { adminAPI } from '../api/services'
