@@ -346,3 +346,38 @@ export const githubAPI = {
     return response.data
   }
 }
+
+// Contest API interfaces
+export interface Contest {
+  id: string
+  name: string
+  platform: string
+  url: string
+  startTime: string
+  endTime: string
+  durationMinutes: number
+  status: 'UPCOMING' | 'RUNNING' | 'FINISHED'
+  lastSyncedAt?: string | null
+}
+
+// Contest API functions
+export const contestAPI = {
+  // Get upcoming contests
+  getUpcomingContests: async (limit?: number, platforms?: string[]): Promise<Contest[]> => {
+    const params: any = {}
+    if (limit) params.limit = limit
+    if (platforms && platforms.length > 0) params.platforms = platforms.join(',')
+    
+    const response = await api.get('/contests/upcoming', { params })
+    return response.data.data || []
+  },
+
+  // Get calendar contests
+  getCalendarContests: async (from: string, to: string, platforms?: string[]): Promise<Contest[]> => {
+    const params: any = { from, to }
+    if (platforms && platforms.length > 0) params.platforms = platforms.join(',')
+    
+    const response = await api.get('/contests/calendar', { params })
+    return response.data.data || []
+  }
+}

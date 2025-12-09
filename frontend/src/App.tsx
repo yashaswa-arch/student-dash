@@ -22,6 +22,7 @@ import SimpleAdminDashboard from './pages/SimpleAdminDashboard'
 import AptitudeHome from './pages/AptitudeHome'
 import AptitudeQuiz from './pages/AptitudeQuiz'
 import AptitudeResult from './pages/AptitudeResult'
+import ContestsPage from './pages/ContestsPage'
 
 // Components
 import ProtectedRoute from './components/auth/ProtectedRoute'
@@ -327,6 +328,22 @@ const App: React.FC = () => {
                       transition={{ duration: 0.3 }}
                     >
                       <AptitudeResult />
+                    </motion.div>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/contests"
+                element={
+                  <ProtectedRoute>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <ContestsPage />
                     </motion.div>
                   </ProtectedRoute>
                 }

@@ -22,6 +22,7 @@ import {
   Search
 } from 'lucide-react'
 import GitHubStatsSection from '../components/GitHubStatsSection'
+import ContestsSection from '../components/ContestsSection'
 
 const NewStudentDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -484,7 +485,7 @@ const NewStudentDashboard: React.FC = () => {
                   <div className="border border-gray-200 dark:border-dark-600 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Question Tracker</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Track questions across LeetCode, CodeForces, etc.
+                      Monitor your coding practice progress and track solved problems across platforms
                     </p>
                     <button 
                       onClick={() => navigate('/question-tracker')}
@@ -534,14 +535,7 @@ const NewStudentDashboard: React.FC = () => {
             )}
 
             {activeTab === 'contests' && (
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                  Upcoming Contests
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Contest calendar and reminders coming soon...
-                </p>
-              </div>
+              <ContestsSection />
             )}
 
             {activeTab === 'github' && (
