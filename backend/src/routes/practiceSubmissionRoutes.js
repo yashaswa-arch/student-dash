@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const PracticeSubmission = require('../models/PracticeSubmission');
+const { auth } = require('../middleware/auth');
 
 // POST /api/submissions
 // Body: {
-//   userId, questionId, language, code, stdout, stderr, status,
+//   questionId, language, code, stdout, stderr, status,
 //   questionTitle, topics, difficulty, timeTakenInMinutes, source
 // }
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
+    const userId = req.user._id.toString();
     const {
-      userId,
       questionId,
       language,
       code,
@@ -24,11 +25,11 @@ router.post('/', async (req, res) => {
       source
     } = req.body;
 
-    // Base validation (backwards compatible)
-    if (!userId || !questionId || !language || !code || !status) {
+    // Base validation
+    if (!questionId || !language || !code || !status) {
       return res.status(400).json({
         success: false,
-        message: 'userId, questionId, language, code and status are required'
+        message: 'questionId, language, code and status are required'
       });
     }
 
@@ -88,22 +89,15 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/submissions/stats/overview
-router.get('/stats/overview', async (req, res) => {
+router.get('/stats/overview', auth, async (req, res) => {
   try {
-    const { userId } = req.query;
-
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'userId is required'
-      });
-    }
+    const userId = req.user._id.toString();
 
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const [stats] = await PracticeSubmission.aggregate([
-      { $match: { userId: String(userId) } },
+      { $match: { userId: userId } },
       {
         $group: {
           _id: null,
@@ -156,19 +150,12 @@ router.get('/stats/overview', async (req, res) => {
 });
 
 // GET /api/submissions/stats/by-topic
-router.get('/stats/by-topic', async (req, res) => {
+router.get('/stats/by-topic', auth, async (req, res) => {
   try {
-    const { userId } = req.query;
-
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'userId is required'
-      });
-    }
+    const userId = req.user._id.toString();
 
     const results = await PracticeSubmission.aggregate([
-      { $match: { userId: String(userId), topics: { $exists: true, $ne: [] } } },
+      { $match: { userId: userId, topics: { $exists: true, $ne: [] } } },
       { $unwind: '$topics' },
       {
         $group: {
@@ -203,21 +190,14 @@ router.get('/stats/by-topic', async (req, res) => {
 });
 
 // GET /api/submissions/stats/by-difficulty
-router.get('/stats/by-difficulty', async (req, res) => {
+router.get('/stats/by-difficulty', auth, async (req, res) => {
   try {
-    const { userId } = req.query;
-
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'userId is required'
-      });
-    }
+    const userId = req.user._id.toString();
 
     const results = await PracticeSubmission.aggregate([
       {
         $match: {
-          userId: String(userId),
+          userId: userId,
           difficulty: { $exists: true, $ne: null }
         }
       },
@@ -254,10 +234,10 @@ router.get('/stats/by-difficulty', async (req, res) => {
 });
 
 // GET /api/submissions/list
-router.get('/list', async (req, res) => {
+router.get('/list', auth, async (req, res) => {
   try {
+    const userId = req.user._id.toString();
     const {
-      userId,
       topic,
       difficulty,
       language,
@@ -268,15 +248,8 @@ router.get('/list', async (req, res) => {
       limit = 20
     } = req.query;
 
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'userId is required'
-      });
-    }
-
     const match = {
-      userId: String(userId)
+      userId: userId
     };
 
     if (topic) {
@@ -335,20 +308,21 @@ router.get('/list', async (req, res) => {
   }
 });
 
-// GET /api/submissions/latest?userId=...&questionId=...&language=...
-router.get('/latest', async (req, res) => {
+// GET /api/submissions/latest?questionId=...&language=...
+router.get('/latest', auth, async (req, res) => {
   try {
-    const { userId, questionId, language } = req.query;
+    const userId = req.user._id.toString();
+    const { questionId, language } = req.query;
 
-    if (!userId || !questionId || !language) {
+    if (!questionId || !language) {
       return res.status(400).json({
         success: false,
-        message: 'userId, questionId and language are required'
+        message: 'questionId and language are required'
       });
     }
 
     const submission = await PracticeSubmission.findOne({
-      userId,
+      userId: userId,
       questionId,
       language
     })
@@ -376,19 +350,12 @@ router.get('/latest', async (req, res) => {
   }
 });
 
-// GET /api/submissions?userId=...
-router.get('/', async (req, res) => {
+// GET /api/submissions
+router.get('/', auth, async (req, res) => {
   try {
-    const { userId } = req.query;
+    const userId = req.user._id.toString();
 
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'userId is required'
-      });
-    }
-
-    const submissions = await PracticeSubmission.find({ userId })
+    const submissions = await PracticeSubmission.find({ userId: userId })
       .sort({ createdAt: -1 })
       .lean();
 

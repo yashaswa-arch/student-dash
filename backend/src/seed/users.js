@@ -56,8 +56,13 @@ const seedUsers = async () => {
   try {
     console.log('👥 Seeding users...');
     
-    // Clear existing users
-    await User.deleteMany({});
+    // Check if users already exist
+    const existingCount = await User.countDocuments();
+    
+    if (existingCount > 0) {
+      console.log('Users already exist. Skipping user seeding.');
+      return;
+    }
     
     // Hash passwords and create users
     const usersWithHashedPasswords = await Promise.all(

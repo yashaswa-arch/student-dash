@@ -118,15 +118,11 @@ const QuestionTrackerPage: React.FC = () => {
   useEffect(() => {
     if (!user?._id) return
 
-    const userId = user._id
-
     const fetchOverview = async () => {
       try {
         setOverviewLoading(true)
         setOverviewError(null)
-        const res = await api.get('/submissions/stats/overview', {
-          params: { userId },
-        })
+        const res = await api.get('/submissions/stats/overview')
         setOverview(res.data.data as OverviewStats)
       } catch (error: any) {
         console.error('Error fetching overview stats:', error)
@@ -140,9 +136,7 @@ const QuestionTrackerPage: React.FC = () => {
       try {
         setTopicLoading(true)
         setTopicError(null)
-        const res = await api.get('/submissions/stats/by-topic', {
-          params: { userId },
-        })
+        const res = await api.get('/submissions/stats/by-topic')
         setTopicStats(res.data.data as TopicStat[])
     } catch (error: any) {
         console.error('Error fetching topic stats:', error)
@@ -156,9 +150,7 @@ const QuestionTrackerPage: React.FC = () => {
       try {
         setDifficultyLoading(true)
         setDifficultyError(null)
-        const res = await api.get('/submissions/stats/by-difficulty', {
-          params: { userId },
-        })
+        const res = await api.get('/submissions/stats/by-difficulty')
         setDifficultyStats(res.data.data as DifficultyStat[])
     } catch (error: any) {
         console.error('Error fetching difficulty stats:', error)
