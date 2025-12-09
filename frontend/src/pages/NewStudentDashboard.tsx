@@ -21,6 +21,7 @@ import {
   Bell,
   Search
 } from 'lucide-react'
+import GitHubStatsSection from '../components/GitHubStatsSection'
 
 const NewStudentDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -545,12 +546,7 @@ const NewStudentDashboard: React.FC = () => {
 
             {activeTab === 'github' && (
               <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                  GitHub Stats & Projects
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Connect your GitHub to see contributions, projects, and dev stats...
-                </p>
+                <GitHubStatsSection />
               </div>
             )}
           </div>

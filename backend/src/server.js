@@ -26,6 +26,7 @@ const questionRoutes = require('./routes/questionRoutes');
 const leetcodeRoutes = require('./routes/leetcodeRoutes');
 const aptitudeRoutes = require('./routes/aptitudeRoutes');
 const codingProfileRoutes = require('./routes/codingProfileRoutes');
+const githubRoutes = require('./routes/githubRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -92,6 +93,7 @@ app.use('/api/submissions', practiceSubmissionRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/aptitude', aptitudeRoutes);
 app.use('/api/coding-profiles', codingProfileRoutes);
+app.use('/api', githubRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  githubUsername: {
+    type: String,
+    trim: true
+  },
   codingHistory: {
     recentPatterns: [{
       pattern: String,

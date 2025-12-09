@@ -325,3 +325,24 @@ export const aptitudeAPI = {
     return response.data.topics || response.data.data || []
   }
 }
+
+// GitHub API functions
+export const githubAPI = {
+  // Get GitHub username for logged-in user
+  getGithubProfile: async () => {
+    const response = await api.get('/profile/github')
+    return response.data
+  },
+
+  // Update GitHub username
+  updateGithubProfile: async (githubUsername: string) => {
+    const response = await api.put('/profile/github', { githubUsername })
+    return response.data
+  },
+
+  // Get GitHub stats
+  getGithubStats: async () => {
+    const response = await api.get('/github/stats')
+    return response.data
+  }
+}
