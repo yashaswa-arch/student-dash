@@ -17,13 +17,16 @@ import {
   Star,
   Calendar,
   Trophy,
-  BarChart3
+  BarChart3,
+  ExternalLink
 } from 'lucide-react'
+import CodingPlatformsTab from '../components/CodingPlatformsTab'
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate()
   const user = useSelector((state: RootState) => state.auth.user)
-  const [activeTab, setActiveTab] = useState<'overview' | 'languages' | 'topics' | 'timeline'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'coding-platforms'>('overview')
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'languages' | 'topics' | 'timeline'>('overview')
 
   // User stats - all start at 0
   const stats = {
@@ -149,177 +152,13 @@ const ProfilePage: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Total Solved */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                <CheckCircle2 className="text-blue-600 dark:text-blue-400" size={24} />
-              </div>
-              <Trophy className="text-gray-300 dark:text-gray-700" size={32} />
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-              {stats.totalSolved}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Problems Solved</p>
-            {stats.totalSolved === 0 && (
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Start solving to track progress</p>
-            )}
-          </motion.div>
-
-          {/* Current Streak */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-                <Flame className="text-orange-600 dark:text-orange-400" size={24} />
-              </div>
-              <Flame className="text-gray-300 dark:text-gray-700" size={32} />
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-              {stats.currentStreak}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Day Streak</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-              Max: {stats.maxStreak} days
-            </p>
-          </motion.div>
-
-          {/* Accuracy */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-                <Target className="text-green-600 dark:text-green-400" size={24} />
-              </div>
-              <TrendingUp className="text-gray-300 dark:text-gray-700" size={32} />
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-              {stats.accuracy}%
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Accuracy Rate</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-              {stats.acceptedSubmissions}/{stats.totalSubmissions} accepted
-            </p>
-          </motion.div>
-
-          {/* Contest Rating */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <Award className="text-purple-600 dark:text-purple-400" size={24} />
-              </div>
-              <Star className="text-gray-300 dark:text-gray-700" size={32} />
-            </div>
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-              {stats.contestRating}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Contest Rating</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-              {stats.contestsParticipated} contests
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Problem Solving Breakdown */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Easy Problems</h3>
-              <div className="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full text-sm font-semibold">
-                {stats.easySolved}/500
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
-              <div
-                className="bg-green-500 h-3 rounded-full transition-all"
-                style={{ width: `${(stats.easySolved / 500) * 100}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {stats.easySolved === 0 ? 'No easy problems solved yet' : `${((stats.easySolved / 500) * 100).toFixed(1)}% complete`}
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Medium Problems</h3>
-              <div className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 rounded-full text-sm font-semibold">
-                {stats.mediumSolved}/800
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
-              <div
-                className="bg-yellow-500 h-3 rounded-full transition-all"
-                style={{ width: `${(stats.mediumSolved / 800) * 100}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {stats.mediumSolved === 0 ? 'No medium problems solved yet' : `${((stats.mediumSolved / 800) * 100).toFixed(1)}% complete`}
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Hard Problems</h3>
-              <div className="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-full text-sm font-semibold">
-                {stats.hardSolved}/300
-              </div>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
-              <div
-                className="bg-red-500 h-3 rounded-full transition-all"
-                style={{ width: `${(stats.hardSolved / 300) * 100}%` }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {stats.hardSolved === 0 ? 'No hard problems solved yet' : `${((stats.hardSolved / 300) * 100).toFixed(1)}% complete`}
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Tabs */}
+        {/* Main Tabs */}
         <div className="bg-white dark:bg-dark-800 rounded-xl shadow-lg border border-gray-200 dark:border-dark-700 mb-8">
           <div className="border-b border-gray-200 dark:border-dark-700">
             <div className="flex gap-2 p-2">
               {[
                 { id: 'overview', label: 'Overview', icon: BarChart3 },
-                { id: 'languages', label: 'Languages', icon: Code2 },
-                { id: 'topics', label: 'Topics', icon: Target },
-                { id: 'timeline', label: 'Timeline', icon: Calendar }
+                { id: 'coding-platforms', label: 'Coding Platforms', icon: ExternalLink }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -338,8 +177,204 @@ const ProfilePage: React.FC = () => {
           </div>
 
           <div className="p-6">
-            {/* Overview Tab */}
+            {/* Overview Tab Content */}
             {activeTab === 'overview' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-8"
+              >
+                {/* Stats Overview Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Total Solved */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                        <CheckCircle2 className="text-blue-600 dark:text-blue-400" size={24} />
+                      </div>
+                      <Trophy className="text-gray-300 dark:text-gray-700" size={32} />
+                    </div>
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                      {stats.totalSolved}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Problems Solved</p>
+                    {stats.totalSolved === 0 && (
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Start solving to track progress</p>
+                    )}
+                  </motion.div>
+
+                  {/* Current Streak */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                        <Flame className="text-orange-600 dark:text-orange-400" size={24} />
+                      </div>
+                      <Flame className="text-gray-300 dark:text-gray-700" size={32} />
+                    </div>
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                      {stats.currentStreak}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Day Streak</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                      Max: {stats.maxStreak} days
+                    </p>
+                  </motion.div>
+
+                  {/* Accuracy */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                        <Target className="text-green-600 dark:text-green-400" size={24} />
+                      </div>
+                      <TrendingUp className="text-gray-300 dark:text-gray-700" size={32} />
+                    </div>
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                      {stats.accuracy}%
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Accuracy Rate</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                      {stats.acceptedSubmissions}/{stats.totalSubmissions} accepted
+                    </p>
+                  </motion.div>
+
+                  {/* Contest Rating */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                        <Award className="text-purple-600 dark:text-purple-400" size={24} />
+                      </div>
+                      <Star className="text-gray-300 dark:text-gray-700" size={32} />
+                    </div>
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                      {stats.contestRating}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Contest Rating</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                      {stats.contestsParticipated} contests
+                    </p>
+                  </motion.div>
+                </div>
+
+                {/* Problem Solving Breakdown */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Easy Problems</h3>
+                      <div className="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full text-sm font-semibold">
+                        {stats.easySolved}/500
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
+                      <div
+                        className="bg-green-500 h-3 rounded-full transition-all"
+                        style={{ width: `${(stats.easySolved / 500) * 100}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {stats.easySolved === 0 ? 'No easy problems solved yet' : `${((stats.easySolved / 500) * 100).toFixed(1)}% complete`}
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Medium Problems</h3>
+                      <div className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400 rounded-full text-sm font-semibold">
+                        {stats.mediumSolved}/800
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
+                      <div
+                        className="bg-yellow-500 h-3 rounded-full transition-all"
+                        style={{ width: `${(stats.mediumSolved / 800) * 100}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {stats.mediumSolved === 0 ? 'No medium problems solved yet' : `${((stats.mediumSolved / 800) * 100).toFixed(1)}% complete`}
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="bg-white dark:bg-dark-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-dark-700"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Hard Problems</h3>
+                      <div className="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-full text-sm font-semibold">
+                        {stats.hardSolved}/300
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
+                      <div
+                        className="bg-red-500 h-3 rounded-full transition-all"
+                        style={{ width: `${(stats.hardSolved / 300) * 100}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {stats.hardSolved === 0 ? 'No hard problems solved yet' : `${((stats.hardSolved / 300) * 100).toFixed(1)}% complete`}
+                    </p>
+                  </motion.div>
+                </div>
+
+                  {/* Sub Tabs */}
+                  <div className="bg-white dark:bg-dark-800 rounded-xl shadow-lg border border-gray-200 dark:border-dark-700">
+                    <div className="border-b border-gray-200 dark:border-dark-700">
+                      <div className="flex gap-2 p-2">
+                        {[
+                          { id: 'overview', label: 'Overview', icon: BarChart3 },
+                          { id: 'languages', label: 'Languages', icon: Code2 },
+                          { id: 'topics', label: 'Topics', icon: Target },
+                          { id: 'timeline', label: 'Timeline', icon: Calendar }
+                        ].map((tab) => (
+                          <button
+                            key={tab.id}
+                            onClick={() => setActiveSubTab(tab.id as any)}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                              activeSubTab === tab.id
+                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700'
+                            }`}
+                          >
+                            <tab.icon size={18} />
+                            {tab.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-6">
+                      {/* Overview Sub Tab */}
+                      {activeSubTab === 'overview' && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -430,8 +465,8 @@ const ProfilePage: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Languages Tab */}
-            {activeTab === 'languages' && (
+                      {/* Languages Sub Tab */}
+                      {activeSubTab === 'languages' && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -472,8 +507,8 @@ const ProfilePage: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Topics Tab */}
-            {activeTab === 'topics' && (
+                      {/* Topics Sub Tab */}
+                      {activeSubTab === 'topics' && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -513,23 +548,32 @@ const ProfilePage: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Timeline Tab */}
-            {activeTab === 'timeline' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  Recent Activity
-                </h3>
-                <div className="text-center py-12 bg-gray-50 dark:bg-dark-700 rounded-lg">
-                  <Clock className="mx-auto mb-3 text-gray-400 dark:text-gray-600" size={48} />
-                  <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">No activity yet</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500">
-                    Your recent submissions and achievements will appear here
-                  </p>
-                </div>
-              </motion.div>
+                      {/* Timeline Sub Tab */}
+                      {activeSubTab === 'timeline' && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                        >
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                            Recent Activity
+                          </h3>
+                          <div className="text-center py-12 bg-gray-50 dark:bg-dark-700 rounded-lg">
+                            <Clock className="mx-auto mb-3 text-gray-400 dark:text-gray-600" size={48} />
+                            <p className="text-gray-600 dark:text-gray-400 font-medium mb-1">No activity yet</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-500">
+                              Your recent submissions and achievements will appear here
+                            </p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+            )}
+
+            {/* Coding Platforms Tab */}
+            {activeTab === 'coding-platforms' && (
+              <CodingPlatformsTab />
             )}
           </div>
         </div>
