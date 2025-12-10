@@ -55,7 +55,10 @@ interface PracticeSubmission {
   topics?: string[]
   difficulty?: 'Easy' | 'Medium' | 'Hard'
   language: string
-  status: 'success' | 'error'
+  status?: 'success' | 'error' // Legacy field, kept for backward compatibility
+  verdict?: 'PASSED' | 'FAILED' | 'COMPILE_ERROR' | 'RUNTIME_ERROR' | 'PENDING'
+  passedTests?: number
+  totalTests?: number
 }
 
 const DIFFICULTY_COLORS: Record<string, string> = {
@@ -275,6 +278,46 @@ const QuestionTrackerPage: React.FC = () => {
     }
   }
 
+  // Get verdict-based status display (only PASSED counts as solved)
+  const getVerdictStatus = (verdict?: string) => {
+    // Default to PENDING if no verdict (for backward compatibility)
+    const finalVerdict = verdict || 'PENDING'
+    
+    switch (finalVerdict) {
+      case 'PASSED':
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+            ✅ Solved
+          </span>
+        )
+      case 'FAILED':
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
+            ❌ Wrong Answer
+          </span>
+        )
+      case 'COMPILE_ERROR':
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+            🟠 Compile Error
+          </span>
+        )
+      case 'RUNTIME_ERROR':
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+            🟠 Runtime Error
+          </span>
+        )
+      case 'PENDING':
+      default:
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+            ⚪ Attempted
+          </span>
+        )
+    }
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-dark-900">
@@ -284,7 +327,7 @@ const QuestionTrackerPage: React.FC = () => {
             Please login to view your Question Tracker
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Your analytics dashboard is only available when you are signed in.
+            Your skill analytics are only available when you are signed in.
           </p>
         </div>
       </div>
@@ -365,7 +408,7 @@ const QuestionTrackerPage: React.FC = () => {
                 </p>
               )}
               <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
-                All successful Quick Practice submissions
+                Questions with verdict = PASSED
               </p>
               </div>
             <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
@@ -770,15 +813,7 @@ const QuestionTrackerPage: React.FC = () => {
                           {s.language}
                         </td>
                         <td className="px-3 py-2">
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                              s.status === 'success'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                            }`}
-                          >
-                            {s.status === 'success' ? 'Success' : 'Error'}
-                          </span>
+                          {getVerdictStatus(s.verdict || (s.status === 'success' ? 'PASSED' : 'FAILED'))}
                         </td>
                       </tr>
                     ))}

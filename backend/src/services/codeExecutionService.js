@@ -277,9 +277,21 @@ class CodeExecutionService {
     if (!expected) return true; // No expected output means any output is acceptable
     
     // Normalize whitespace and line endings
-    const normalizeOutput = (str) => str.trim().replace(/\r\n/g, '\n').replace(/\s+/g, ' ');
+    // Trim, normalize line endings, then normalize multiple spaces/newlines to single
+    const normalizeOutput = (str) => {
+      if (!str) return '';
+      return str
+        .trim()
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .replace(/\n+/g, '\n')
+        .replace(/[ \t]+/g, ' ');
+    };
     
-    return normalizeOutput(actual) === normalizeOutput(expected);
+    const normalizedActual = normalizeOutput(actual);
+    const normalizedExpected = normalizeOutput(expected);
+    
+    return normalizedActual === normalizedExpected;
   }
 
   /**

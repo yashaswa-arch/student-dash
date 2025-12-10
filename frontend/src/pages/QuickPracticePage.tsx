@@ -69,13 +69,35 @@ const QuickPracticePage: React.FC = () => {
   const [code, setCode] = useState<string>(LANGUAGE_TEMPLATES.java);
   const [output, setOutput] = useState<ExecutionResult | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitResult, setSubmitResult] = useState<{
+    verdict: 'Passed' | 'Failed' | 'Compile Error' | 'Runtime Error';
+    message: string;
+    passedTests?: number;
+    totalTests?: number;
+  } | null>(null);
   const [stdin, setStdin] = useState<string>('');
   const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
   const [selectedQuestion, setSelectedQuestion] = useState<PracticeQuestion | null>(null);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
   const [questionError, setQuestionError] = useState<string | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string>('Arrays');
   const originalConsoleLogRef = useRef<typeof console.log | null>(null);
   const [practiceStartTime, setPracticeStartTime] = useState<Date | null>(null);
+
+  // Available topics (matching the seeded questions)
+  const availableTopics = [
+    'Arrays',
+    'Strings',
+    'Hashing',
+    'Two Pointers',
+    'Sliding Window',
+    'Stack',
+    'Queue',
+    'Linked List',
+    'Recursion',
+    'Backtracking'
+  ];
 
   // Track when user starts practicing current question
   useEffect(() => {
@@ -97,14 +119,14 @@ const QuickPracticePage: React.FC = () => {
   const handlePrevQuestion = () => goToQuestionByOffset(-1);
   const handleNextQuestion = () => goToQuestionByOffset(1);
 
-  // Fetch Array practice questions on mount
+  // Fetch practice questions based on selected topic
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
         setIsLoadingQuestions(true);
         setQuestionError(null);
         const response = await api.get('/practice-questions', {
-          params: { topic: 'Arrays' }
+          params: selectedTopic ? { topic: selectedTopic } : {}
         });
 
         const data = response.data?.data as PracticeQuestion[];
@@ -114,6 +136,7 @@ const QuickPracticePage: React.FC = () => {
           setPracticeStartTime(new Date());
         } else {
           setQuestions([]);
+          setSelectedQuestion(null);
         }
       } catch (error: any) {
         console.error('Error fetching practice questions:', error);
@@ -126,7 +149,7 @@ const QuickPracticePage: React.FC = () => {
     };
 
     fetchQuestions();
-  }, []);
+  }, [selectedTopic]);
 
   // Update code when language or selected question changes
   useEffect(() => {
@@ -137,12 +160,30 @@ const QuickPracticePage: React.FC = () => {
       setCode(LANGUAGE_TEMPLATES[language]);
     }
     setOutput(null);
+    setSubmitResult(null);
   }, [language, selectedQuestion]);
 
-  const autoSaveSubmission = async (result: ExecutionResult) => {
+  // Helper function to normalize output for comparison
+  const normalizeOutput = (output: string): string => {
+    return output.trim().replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  };
+
+  // Helper function to compare outputs
+  const compareOutputs = (actual: string, expected: string): boolean => {
+    const normalizedActual = normalizeOutput(actual);
+    const normalizedExpected = normalizeOutput(expected);
+    return normalizedActual === normalizedExpected;
+  };
+
+  // Save submission to backend (called on Submit regardless of verdict)
+  const saveSubmission = async (
+    result: ExecutionResult, 
+    verdict: 'Passed' | 'Failed' | 'Compile Error' | 'Runtime Error',
+    passedTests: number,
+    totalTests: number
+  ) => {
     if (!user || !user._id) return;
     if (!selectedQuestion) return;
-    if (result.status !== 'success') return;
 
     // Derive topics and time taken from question + timer
     const mainTopic = (selectedQuestion.topic || '').trim() || 'Arrays';
@@ -157,6 +198,13 @@ const QuickPracticePage: React.FC = () => {
       }
     }
 
+    // Map frontend verdict to backend enum
+    const backendVerdict = 
+      verdict === 'Passed' ? 'PASSED' :
+      verdict === 'Compile Error' ? 'COMPILE_ERROR' :
+      verdict === 'Runtime Error' ? 'RUNTIME_ERROR' :
+      'FAILED';
+
     try {
       await practiceSubmissionAPI.create({
         userId: user._id,
@@ -168,11 +216,21 @@ const QuickPracticePage: React.FC = () => {
         code,
         stdout: result.stdout,
         stderr: result.stderr,
-        status: result.status,
+        // New evaluation fields
+        verdict: backendVerdict,
+        passedTests,
+        totalTests,
+        // Legacy status field (for backward compatibility)
+        status: verdict === 'Passed' ? 'success' : 'error',
         timeTakenInMinutes,
         source: 'quick-practice'
       });
-      toast.success('Saved to Question Tracker');
+      
+      if (verdict === 'Passed') {
+        toast.success('✅ Solution passed! Saved to Question Tracker');
+      } else {
+        toast.success('📝 Submission saved to Question Tracker');
+      }
     } catch (error: any) {
       console.error('Error saving practice submission:', error);
       toast.error(error.response?.data?.message || 'Could not save to Question Tracker');
@@ -237,8 +295,8 @@ const QuickPracticePage: React.FC = () => {
     }
   };
 
-  // Execute code via backend API
-  const executeCode = async () => {
+  // Run: Execute code only on sample input, show output, DO NOT save
+  const handleRun = async () => {
     if (!code.trim()) {
       setOutput({
         stdout: '',
@@ -248,17 +306,27 @@ const QuickPracticePage: React.FC = () => {
       return;
     }
 
+    if (!selectedQuestion) {
+      setOutput({
+        stdout: '',
+        stderr: 'Please select a question first',
+        status: 'error'
+      });
+      return;
+    }
+
     setIsRunning(true);
     setOutput(null);
+    setSubmitResult(null);
+
+    // Use sample input from question
+    const inputToUse = stdin.trim() || selectedQuestion.sampleInput;
 
     try {
       // JavaScript runs client-side
       if (language === 'javascript') {
         const result = executeJavaScript(code);
         setOutput(result);
-        if (result.status === 'success') {
-          await autoSaveSubmission(result);
-        }
         setIsRunning(false);
         return;
       }
@@ -267,7 +335,7 @@ const QuickPracticePage: React.FC = () => {
       const response = await api.post('/execute', {
         language,
         code,
-        stdin: stdin.trim()
+        stdin: inputToUse
       });
 
       if (response.data.success) {
@@ -278,9 +346,6 @@ const QuickPracticePage: React.FC = () => {
           status: result.status === 'accepted' || result.status === 'success' ? 'success' : 'error'
         };
         setOutput(executionResult);
-        if (executionResult.status === 'success') {
-          await autoSaveSubmission(executionResult);
-        }
       } else {
         setOutput({
           stdout: '',
@@ -300,6 +365,160 @@ const QuickPracticePage: React.FC = () => {
     }
   };
 
+  // Submit: Evaluate against all test cases via backend, determine verdict, save results
+  const handleSubmit = async () => {
+    if (!code.trim()) {
+      toast.error('Please write some code before submitting');
+      return;
+    }
+
+    if (!selectedQuestion) {
+      toast.error('Please select a question first');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitResult(null);
+
+    try {
+      // Call backend endpoint to evaluate against all test cases
+      const response = await api.post(`/practice-questions/${selectedQuestion._id}/submit`, {
+        code,
+        language
+      });
+
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Evaluation failed');
+      }
+
+      const {
+        verdict: backendVerdict,
+        passedTests,
+        totalTests,
+        testResults,
+        stdout,
+        stderr
+      } = response.data;
+
+      // Map backend verdict to frontend format
+      let verdict: 'Passed' | 'Failed' | 'Compile Error' | 'Runtime Error';
+      let message: string;
+
+      switch (backendVerdict) {
+        case 'PASSED':
+          verdict = 'Passed';
+          message = `✅ All ${totalTests} test case${totalTests > 1 ? 's' : ''} passed!`;
+          break;
+        case 'COMPILE_ERROR':
+          verdict = 'Compile Error';
+          message = 'Compilation failed. Check your code syntax.';
+          break;
+        case 'RUNTIME_ERROR':
+          verdict = 'Runtime Error';
+          message = `Runtime error: ${stderr || 'Unknown error'}`;
+          break;
+        case 'FAILED':
+        default:
+          verdict = 'Failed';
+          message = `❌ ${passedTests}/${totalTests} test case${totalTests > 1 ? 's' : ''} passed. Check your logic.`;
+          break;
+      }
+
+      // Create execution result for display
+      const executionResult: ExecutionResult = {
+        stdout: stdout || '',
+        stderr: stderr || '',
+        status: backendVerdict === 'PASSED' ? 'success' : 'error'
+      };
+
+      setSubmitResult({ 
+        verdict, 
+        message,
+        passedTests,
+        totalTests
+      });
+      setOutput(executionResult);
+
+      // Save to backend with evaluation results (regardless of verdict)
+      await saveSubmission(
+        executionResult,
+        verdict,
+        passedTests,
+        totalTests
+      );
+
+      // Show success toast only for PASSED
+      if (verdict === 'Passed') {
+        toast.success('✅ All test cases passed!');
+      }
+    } catch (error: any) {
+      console.error('Submit error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to submit code';
+      const backendVerdict = error.response?.data?.verdict;
+      
+      // If backend returned a verdict, use it
+      if (backendVerdict) {
+        const passedTests = error.response?.data?.passedTests || 0;
+        const totalTests = error.response?.data?.totalTests || 0;
+        
+        let verdict: 'Passed' | 'Failed' | 'Compile Error' | 'Runtime Error';
+        switch (backendVerdict) {
+          case 'PASSED':
+            verdict = 'Passed';
+            break;
+          case 'COMPILE_ERROR':
+            verdict = 'Compile Error';
+            break;
+          case 'RUNTIME_ERROR':
+            verdict = 'Runtime Error';
+            break;
+          default:
+            verdict = 'Failed';
+        }
+
+        // Generate appropriate message based on verdict
+        let message = errorMessage;
+        if (passedTests !== undefined && totalTests !== undefined) {
+          if (verdict === 'Passed') {
+            message = `✅ All ${totalTests} test case${totalTests > 1 ? 's' : ''} passed!`;
+          } else if (verdict === 'Failed') {
+            message = `❌ ${passedTests}/${totalTests} test case${totalTests > 1 ? 's' : ''} passed. Check your logic.`;
+          } else if (verdict === 'Compile Error') {
+            message = 'Compilation failed. Check your code syntax.';
+          } else if (verdict === 'Runtime Error') {
+            message = `Runtime error: ${error.response?.data?.stderr || 'Unknown error'}`;
+          }
+        }
+
+        setSubmitResult({
+          verdict,
+          message,
+          passedTests,
+          totalTests
+        });
+
+        const executionResult: ExecutionResult = {
+          stdout: error.response?.data?.stdout || '',
+          stderr: error.response?.data?.stderr || errorMessage,
+          status: 'error'
+        };
+        setOutput(executionResult);
+
+        await saveSubmission(executionResult, verdict, passedTests, totalTests);
+      } else {
+        setSubmitResult({
+          verdict: 'Runtime Error',
+          message: `Submission failed: ${errorMessage}`,
+          passedTests: 0,
+          totalTests: 0
+        });
+        toast.error(`Submission failed: ${errorMessage}`);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-900">
       {/* Header */}
@@ -313,6 +532,19 @@ const QuickPracticePage: React.FC = () => {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Topic Selector */}
+              <select
+                value={selectedTopic}
+                onChange={(e) => setSelectedTopic(e.target.value)}
+                className="px-4 py-2 bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {availableTopics.map((topic) => (
+                  <option key={topic} value={topic}>
+                    {topic}
+                  </option>
+                ))}
+              </select>
+
               {/* Language Selector */}
               <select
                 value={language}
@@ -329,9 +561,9 @@ const QuickPracticePage: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={executeCode}
-                disabled={isRunning}
-                className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
+                onClick={handleRun}
+                disabled={isRunning || isSubmitting}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
               >
                 {isRunning ? (
                   <>
@@ -341,7 +573,28 @@ const QuickPracticePage: React.FC = () => {
                 ) : (
                   <>
                     <Play className="w-5 h-5" />
-                    <span>Run Code</span>
+                    <span>Run</span>
+                  </>
+                )}
+              </motion.button>
+
+              {/* Submit Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSubmit}
+                disabled={isRunning || isSubmitting}
+                className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-colors"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-5 h-5" />
+                    <span>Submit</span>
                   </>
                 )}
               </motion.button>
@@ -356,9 +609,16 @@ const QuickPracticePage: React.FC = () => {
           {/* Left Side - Question Selector */}
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-700 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Select a Question
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Questions
+                </h2>
+                {questions.length > 0 && (
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {questions.length} {questions.length === 1 ? 'question' : 'questions'}
+                  </span>
+                )}
+              </div>
               {isLoadingQuestions && (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
                   Loading questions...
@@ -544,24 +804,52 @@ const QuickPracticePage: React.FC = () => {
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Output
                 </span>
-                {output && (
-                  <div className="flex items-center space-x-2">
-                    {output.status === 'success' ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <AlertCircle className="w-4 h-4 text-red-500" />
-                    )}
-                    <span
-                      className={`text-xs font-medium ${
-                        output.status === 'success'
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
-                      }`}
-                    >
-                      {output.status === 'success' ? 'Success' : 'Error'}
-                    </span>
-                  </div>
-                )}
+                <div className="flex items-center space-x-3">
+                  {submitResult && (
+                    <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-md font-semibold ${
+                      submitResult.verdict === 'Passed'
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                        : submitResult.verdict === 'Compile Error' || submitResult.verdict === 'Runtime Error'
+                        ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                    }`}>
+                      {submitResult.verdict === 'Passed' ? (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-xs">Solved</span>
+                        </>
+                      ) : submitResult.verdict === 'Failed' ? (
+                        <>
+                          <AlertCircle className="w-4 h-4" />
+                          <span className="text-xs">Wrong Answer</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-4 h-4" />
+                          <span className="text-xs">{submitResult.verdict}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  {output && !submitResult && (
+                    <div className="flex items-center space-x-2">
+                      {output.status === 'success' ? (
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <AlertCircle className="w-4 h-4 text-red-500" />
+                      )}
+                      <span
+                        className={`text-xs font-medium ${
+                          output.status === 'success'
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-red-600 dark:text-red-400'
+                        }`}
+                      >
+                        {output.status === 'success' ? 'Success' : 'Error'}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="p-4 min-h-[200px] max-h-[400px] overflow-y-auto">
                 {!output ? (
@@ -571,6 +859,67 @@ const QuickPracticePage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
+                    {/* Submit Result Panel */}
+                    {submitResult && (
+                      <div className={`p-4 rounded-lg border-2 ${
+                        submitResult.verdict === 'Passed'
+                          ? 'bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-600'
+                          : submitResult.verdict === 'Compile Error' || submitResult.verdict === 'Runtime Error'
+                          ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-500 dark:border-orange-600'
+                          : 'bg-red-50 dark:bg-red-900/20 border-red-500 dark:border-red-600'
+                      }`}>
+                        {/* Verdict Badge */}
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-2">
+                            {submitResult.verdict === 'Passed' ? (
+                              <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                            ) : (
+                              <AlertCircle className={`w-6 h-6 ${
+                                submitResult.verdict === 'Compile Error' || submitResult.verdict === 'Runtime Error'
+                                  ? 'text-orange-600 dark:text-orange-400'
+                                  : 'text-red-600 dark:text-red-400'
+                              }`} />
+                            )}
+                            <span className={`text-lg font-bold ${
+                              submitResult.verdict === 'Passed'
+                                ? 'text-green-700 dark:text-green-300'
+                                : submitResult.verdict === 'Compile Error' || submitResult.verdict === 'Runtime Error'
+                                ? 'text-orange-700 dark:text-orange-300'
+                                : 'text-red-700 dark:text-red-300'
+                            }`}>
+                              {submitResult.verdict === 'Passed' ? 'Solved' :
+                               submitResult.verdict === 'Failed' ? 'Wrong Answer' :
+                               submitResult.verdict}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Test Summary */}
+                        {submitResult.passedTests !== undefined && submitResult.totalTests !== undefined && (
+                          <div className="mb-3">
+                            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                              {submitResult.passedTests === submitResult.totalTests
+                                ? `✅ All ${submitResult.totalTests} test case${submitResult.totalTests > 1 ? 's' : ''} passed`
+                                : `${submitResult.passedTests} / ${submitResult.totalTests} test case${submitResult.totalTests > 1 ? 's' : ''} passed`}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Status Message */}
+                        <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
+                          {submitResult.verdict === 'Passed' ? (
+                            <p className="text-sm font-semibold text-green-700 dark:text-green-300">
+                              ✅ Marked as Solved
+                            </p>
+                          ) : (
+                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              Try again
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Stdout */}
                     {output.stdout && (
                       <div>

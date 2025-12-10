@@ -39,10 +39,25 @@ const practiceSubmissionSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    // New evaluation fields
+    verdict: {
+      type: String,
+      enum: ['PENDING', 'PASSED', 'FAILED', 'COMPILE_ERROR', 'RUNTIME_ERROR'],
+      default: 'PENDING'
+    },
+    passedTests: {
+      type: Number,
+      default: 0
+    },
+    totalTests: {
+      type: Number,
+      default: 0
+    },
+    // Legacy status field - kept for backward compatibility, but not used for logic
     status: {
       type: String,
       enum: ['success', 'error'],
-      required: true
+      default: 'error' // Default to error for backward compatibility
     },
     // Optional metadata about where the submission came from
     source: {

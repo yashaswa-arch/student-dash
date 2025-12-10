@@ -39,6 +39,21 @@ const practiceQuestionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  // Test cases for evaluation
+  testCases: [{
+    input: {
+      type: String,
+      required: true
+    },
+    expectedOutput: {
+      type: String,
+      required: true
+    },
+    isHidden: {
+      type: Boolean,
+      default: false
+    }
+  }],
   order: {
     type: Number,
     required: true,
