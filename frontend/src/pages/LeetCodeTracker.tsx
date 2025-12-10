@@ -329,23 +329,6 @@ const LeetCodeTracker: React.FC = () => {
                     }}
                   />
                 </div>
-                <button
-                  onClick={handleAnalyzeCode}
-                  disabled={analyzing}
-                  className="mt-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium"
-                >
-                  {analyzing ? (
-                    <>
-                      <Clock className="w-4 h-4 inline mr-2 animate-spin" />
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 inline mr-2" />
-                      Analyze Code
-                    </>
-                  )}
-                </button>
               </motion.div>
             )}
 

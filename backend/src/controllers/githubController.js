@@ -132,7 +132,7 @@ const getGithubStats = async (req, res) => {
     try {
       userResponse = await axios.get(`https://api.github.com/users/${githubUsername}`, {
         headers: {
-          'User-Agent': 'Student-Dash-App',
+          'User-Agent': 'SAP-Skill-Analytics-Platform',
           'Accept': 'application/vnd.github.v3+json'
         },
         timeout: 10000
@@ -156,7 +156,7 @@ const getGithubStats = async (req, res) => {
         `https://api.github.com/users/${githubUsername}/repos?per_page=100&sort=updated`,
         {
           headers: {
-            'User-Agent': 'Student-Dash-App',
+            'User-Agent': 'SAP-Skill-Analytics-Platform',
             'Accept': 'application/vnd.github.v3+json'
           },
           timeout: 15000

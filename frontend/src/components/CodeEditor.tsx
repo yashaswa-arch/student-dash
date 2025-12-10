@@ -250,7 +250,7 @@ object HelloWorld extends App {
       <div className="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6">
         <div className="flex items-center space-x-4">
           <Code2 className="w-6 h-6 text-blue-400" />
-          <h1 className="text-xl font-bold">AI Code Editor</h1>
+          <h1 className="text-xl font-bold">Code Editor & Analyzer</h1>
           <select 
             value={language} 
             onChange={(e) => handleLanguageChange(e.target.value)}
@@ -284,16 +284,6 @@ object HelloWorld extends App {
             </div>
           )}
           
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={analyzeCode}
-            disabled={isAnalyzing}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-colors"
-          >
-            <Brain className="w-4 h-4" />
-            <span>{isAnalyzing ? 'Analyzing...' : 'Analyze Code'}</span>
-          </motion.button>
         </div>
       </div>
 
@@ -345,14 +335,6 @@ object HelloWorld extends App {
                   <span>Characters: {code.length}</span>
                 </div>
                 
-                <button
-                  onClick={analyzeCode}
-                  disabled={isAnalyzing}
-                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 px-4 py-2 rounded font-medium flex items-center space-x-2 transition-colors"
-                >
-                  <Play className="w-4 h-4" />
-                  <span>Run Analysis</span>
-                </button>
               </div>
             )}
           </div>

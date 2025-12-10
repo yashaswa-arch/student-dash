@@ -131,7 +131,7 @@ const AdminLoginPage = () => {
           whileTap={{ scale: 0.95 }}
         >
           <Shield className="h-6 w-6" />
-          <span className="font-semibold">StudentDash Admin</span>
+          <span className="font-semibold">SAP Admin</span>
         </motion.button>
         
         <motion.button
@@ -197,7 +197,7 @@ const AdminLoginPage = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     className="block w-full pl-10 pr-3 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                    placeholder="admin@studentdash.com"
+                    placeholder="admin@sap.com"
                   />
                 </div>
               </div>

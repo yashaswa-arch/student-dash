@@ -74,7 +74,7 @@ async function fetchAllContestsFromAggregator() {
     const res = await axios.get(url, { 
       timeout: 15000,
       headers: {
-        'User-Agent': 'Student-Dash-App/1.0',
+        'User-Agent': 'SAP-Skill-Analytics-Platform/1.0',
         'Accept': 'application/json'
       }
     });

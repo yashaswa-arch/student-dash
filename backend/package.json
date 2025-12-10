@@ -1,13 +1,14 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Backend server for student dashboard platform",
+  "description": "Backend server for SAP — Skill Analytics Platform",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node src/server.js",
     "seed": "node src/seed/index.js",
-    "test": "node src/tests/codeExecutionTest.js"
+    "test": "node src/tests/codeExecutionTest.js",
+    "smoke-test": "node scripts/smokeTestQuickPractice.js"
   },
   "keywords": [
     "express",

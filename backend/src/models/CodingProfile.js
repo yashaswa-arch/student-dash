@@ -11,13 +11,29 @@ const codingProfileSchema = new mongoose.Schema(
     platform: {
       type: String,
       required: [true, 'Platform is required'],
-      enum: ['HACKERRANK', 'CODEFORCES'],
-      trim: true
+      enum: ['codeforces', 'leetcode', 'hackerrank'],
+      trim: true,
+      lowercase: true
     },
     handle: {
       type: String,
       required: [true, 'Handle is required'],
       trim: true
+    },
+    profileUrl: {
+      type: String,
+      trim: true,
+      default: null
+    },
+    displayName: {
+      type: String,
+      trim: true,
+      default: null
+    },
+    avatarUrl: {
+      type: String,
+      trim: true,
+      default: null
     },
     stats: {
       totalSolved: {
@@ -44,6 +60,21 @@ const codingProfileSchema = new mongoose.Schema(
         type: Number,
         default: null
       },
+      badges: [{
+        name: {
+          type: String,
+          required: true
+        },
+        level: {
+          type: String,
+          required: true
+        }
+      }],
+      lastContest: {
+        type: String,
+        default: null
+      },
+      // Legacy fields for backward compatibility
       contestsPlayed: {
         type: Number,
         default: 0
@@ -67,6 +98,24 @@ const codingProfileSchema = new mongoose.Schema(
     collection: 'coding_profiles'
   }
 );
+
+// Pre-save hook to normalize platform to lowercase (for backward compatibility)
+codingProfileSchema.pre('save', function(next) {
+  if (this.platform) {
+    const normalized = this.platform.toLowerCase().trim();
+    // Handle legacy uppercase values and aliases
+    if (normalized === 'codeforces' || normalized === 'cf') {
+      this.platform = 'codeforces';
+    } else if (normalized === 'leetcode' || normalized === 'lc') {
+      this.platform = 'leetcode';
+    } else if (normalized === 'hackerrank' || normalized === 'hr') {
+      this.platform = 'hackerrank';
+    } else {
+      this.platform = normalized;
+    }
+  }
+  next();
+});
 
 // Unique compound index on { user, platform }
 codingProfileSchema.index({ user: 1, platform: 1 }, { unique: true });

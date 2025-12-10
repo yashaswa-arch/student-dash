@@ -134,7 +134,7 @@ const ProfilePage: React.FC = () => {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Profile</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Deep dive into your coding journey</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Comprehensive skill analytics and insights</p>
               </div>
             </div>
             
@@ -429,7 +429,7 @@ const ProfilePage: React.FC = () => {
                 {/* AI Analysis Stats */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    AI-Powered Insights
+                    Code Analysis Insights
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -439,7 +439,7 @@ const ProfilePage: React.FC = () => {
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400">Code Analyses</p>
                       {stats.aiAnalysis === 0 && (
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Use AI analyzer for insights</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Use code analyzer for detailed insights</p>
                       )}
                     </div>
 

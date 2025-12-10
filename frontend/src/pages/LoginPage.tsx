@@ -140,7 +140,7 @@ const LoginPage: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Continue your coding journey
+              Continue enhancing your skills
             </motion.p>
           </div>
 

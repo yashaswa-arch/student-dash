@@ -237,7 +237,8 @@ const App: React.FC = () => {
                 }
               />
 
-              <Route
+              {/* Code Analysis route removed - will be integrated later */}
+              {/* <Route
                 path="/code-analysis"
                 element={
                   <ProtectedRoute>
@@ -251,7 +252,7 @@ const App: React.FC = () => {
                     </motion.div>
                   </ProtectedRoute>
                 }
-              />
+              /> */}
 
               <Route
                 path="/leetcode-tracker"

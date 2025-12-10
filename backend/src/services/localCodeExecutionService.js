@@ -10,7 +10,7 @@ const os = require('os');
 
 class LocalCodeExecutionService {
   constructor() {
-    this.tempDir = path.join(os.tmpdir(), 'student-dash-code');
+    this.tempDir = path.join(os.tmpdir(), 'skill-analytics-platform-code');
     this.ensureTempDir();
   }
 

@@ -165,7 +165,7 @@ const SignupPage: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              Start your coding journey today
+              Start building your skills today
             </motion.p>
           </div>
 

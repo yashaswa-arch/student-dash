@@ -1,6 +1,6 @@
-# 🚀 Student Dash - AI-Powered Coding Platform
+# 🚀 SAP — Skill Analytics Platform
 
-AI-powered platform for coding practice and interview prep. Track problems, get code feedback, improve skills.
+AI-powered skill analytics platform for coding practice and interview prep. Track problems, get code feedback, improve skills.
 
 ## ✨ Features
 
@@ -56,7 +56,7 @@ npm run dev           # Runs on port 3000
 ## 📁 Project Structure
 
 ```
-student-dash/
+skill-analytics-platform/
 ├── frontend/          # React TypeScript app
 ├── backend/           # Express API server
 │   ├── src/models/   # MongoDB schemas

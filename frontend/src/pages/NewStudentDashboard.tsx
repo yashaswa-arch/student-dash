@@ -105,7 +105,7 @@ const NewStudentDashboard: React.FC = () => {
             <div className="flex items-center">
               <Code2 className="text-blue-600 dark:text-blue-400" size={32} />
               <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">
-                Student Dash
+                SAP
               </span>
             </div>
 
@@ -123,15 +123,6 @@ const NewStudentDashboard: React.FC = () => {
 
             {/* Right Side - Actions & Profile */}
             <div className="flex items-center gap-4">
-              {/* AI Code Analysis Button */}
-              <button
-                onClick={() => navigate('/code-analysis')}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
-              >
-                <Zap size={18} />
-                <span>AI Analysis</span>
-              </button>
-
               {/* Notifications */}
               <button className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 relative">
                 <Bell size={22} />
@@ -297,10 +288,10 @@ const NewStudentDashboard: React.FC = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Dashboard
+                Skill Analytics
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Track your coding journey with AI-powered insights
+                Analyze your coding progress with data-driven insights
               </p>
             </div>
           </div>
@@ -362,7 +353,7 @@ const NewStudentDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">AI Analyzed</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Code Analyzed</p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.aiAnalysis}</p>
               </div>
               <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
@@ -424,7 +415,7 @@ const NewStudentDashboard: React.FC = () => {
             >
               <div className="flex items-center justify-center gap-2">
                 <Activity size={18} />
-                Analytics & Progress
+                Skill Analytics
               </div>
             </button>
             <button
@@ -463,7 +454,7 @@ const NewStudentDashboard: React.FC = () => {
                   Practice & Questions
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Track your progress across different platforms and get AI-powered feedback
+                  Track your progress across different platforms and get detailed analytics
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -471,7 +462,7 @@ const NewStudentDashboard: React.FC = () => {
                   <div className="border border-gray-200 dark:border-dark-600 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Quick Practice</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Start coding and get instant AI feedback
+                      Start coding and get instant code analysis
                     </p>
                     <button
                       onClick={() => navigate('/quick-practice')}
@@ -499,7 +490,7 @@ const NewStudentDashboard: React.FC = () => {
                   <div className="border border-gray-200 dark:border-dark-600 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Interview Prep</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Company-specific questions with AI evaluation
+                      Company-specific questions with detailed evaluation
                     </p>
                     <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                       Start Prep
@@ -526,10 +517,10 @@ const NewStudentDashboard: React.FC = () => {
             {activeTab === 'analytics' && (
               <div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                  Analytics & Progress
+                  Skill Analytics
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Detailed analytics coming soon... (Activity heatmap, topic analysis, strengths/weaknesses)
+                  Detailed skill analytics coming soon... (Activity heatmap, topic analysis, strengths/weaknesses)
                 </p>
               </div>
             )}

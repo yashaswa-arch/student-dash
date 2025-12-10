@@ -6,7 +6,7 @@ const systemSettings = [
   {
     category: 'general',
     key: 'platform_name',
-    value: 'Smart Student Dashboard',
+    value: 'SAP — Skill Analytics Platform',
     dataType: 'string',
     description: 'The name of the learning platform',
     isPublic: true,
@@ -66,7 +66,7 @@ const systemSettings = [
   {
     category: 'email',
     key: 'from_email',
-    value: 'noreply@smartstudentdash.com',
+    value: 'noreply@sap.com',
     dataType: 'string',
     description: 'Default from email address',
     isPublic: false,

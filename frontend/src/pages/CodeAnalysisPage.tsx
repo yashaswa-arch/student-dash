@@ -32,10 +32,10 @@ console.log("Final result:", result);`;
       >
         <div className="container mx-auto px-6">
           <h1 className="text-4xl font-bold text-white mb-2">
-            🤖 AI Code Analysis
+            🔍 Code Analysis
           </h1>
           <p className="text-blue-100 text-lg">
-            Get instant feedback on your code with AI-powered analysis and recommendations
+            Get instant feedback on your code with intelligent analysis and recommendations
           </p>
         </div>
       </motion.div>

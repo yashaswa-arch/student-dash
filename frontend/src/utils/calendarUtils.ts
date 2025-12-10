@@ -32,7 +32,7 @@ export function createIcsForContest(contest: {
   const dtEnd = formatIcsDate(endDate)
   
   // Generate unique ID (using timestamp and random)
-  const uid = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}@student-dash`
+  const uid = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}@skill-analytics-platform`
 
   // Escape text for ICS format (escape commas, semicolons, backslashes, newlines)
   const escapeIcsText = (text: string): string => {
@@ -54,7 +54,7 @@ export function createIcsForContest(contest: {
   const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Student Dash//Contest Calendar//EN',
+    'PRODID:-//SAP - Skill Analytics Platform//Contest Calendar//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',

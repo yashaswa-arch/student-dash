@@ -2,7 +2,7 @@
 
 ## 1. Purpose of This Document
 
-This document serves as a comprehensive tracking system for bugs, resolved issues, known limitations, and future risks identified during the development, testing, and integration phases of the Student Dash project. It is designed as a living document that will be continuously updated as the project evolves, new features are added, and issues are discovered or resolved.
+This document serves as a comprehensive tracking system for bugs, resolved issues, known limitations, and future risks identified during the development, testing, and integration phases of the SAP — Skill Analytics Platform project. It is designed as a living document that will be continuously updated as the project evolves, new features are added, and issues are discovered or resolved.
 
 This report ensures transparency, maintainability, and provides a clear record of the project's technical health for developers, contributors, and stakeholders.
 
@@ -313,5 +313,5 @@ When adding new entries to this document:
 
 ---
 
-*This document is maintained as part of the Student Dash project repository and should be updated regularly to reflect the current state of the codebase.*
+*This document is maintained as part of the SAP — Skill Analytics Platform project repository and should be updated regularly to reflect the current state of the codebase.*
 

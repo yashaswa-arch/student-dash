@@ -174,7 +174,12 @@ export interface PracticeSubmissionPayload {
   code: string
   stdout: string
   stderr: string
-  status: 'success' | 'error'
+  // New evaluation fields
+  verdict: 'PENDING' | 'PASSED' | 'FAILED' | 'COMPILE_ERROR' | 'RUNTIME_ERROR'
+  passedTests: number
+  totalTests: number
+  // Legacy status field (optional, for backward compatibility)
+  status?: 'success' | 'error'
   timeTakenInMinutes?: number
   source?: string
 }

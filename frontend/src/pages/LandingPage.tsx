@@ -40,8 +40,8 @@ const LandingPage: React.FC = () => {
   const features = [
     {
       icon: Brain,
-      title: "AI-Powered Learning",
-      description: "Get personalized code analysis and intelligent recommendations powered by advanced AI"
+      title: "Intelligent Code Analysis",
+      description: "Get detailed code analysis with syntax checking, complexity analysis, and improvement suggestions"
     },
     {
       icon: Code,
@@ -85,7 +85,7 @@ const LandingPage: React.FC = () => {
               className="text-2xl font-bold text-gradient"
               whileHover={{ scale: 1.05 }}
             >
-              StudyPlatform
+              SAP
             </motion.div>
             
             <div className="hidden md:flex items-center space-x-8">
@@ -152,8 +152,8 @@ const LandingPage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            AI-powered platform with interactive coding challenges, mock interviews, 
-            and personalized learning paths designed for student placement success.
+            Skill analytics platform with interactive coding challenges, mock interviews, 
+            and personalized learning paths designed for career success.
           </motion.p>
           
           <motion.div 
@@ -263,7 +263,7 @@ const LandingPage: React.FC = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-              Ready to Start Your Journey?
+              Ready to Enhance Your Skills?
             </h2>
             <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
               Join thousands of students who have successfully landed their dream jobs
@@ -283,9 +283,9 @@ const LandingPage: React.FC = () => {
       <footer className="bg-gray-900 border-t border-gray-800 py-12">
         <div className="container-width section-padding">
           <div className="text-center">
-            <div className="text-2xl font-bold text-gradient mb-4">StudyPlatform</div>
+            <div className="text-2xl font-bold text-gradient mb-4">SAP — Skill Analytics Platform</div>
             <p className="text-gray-400 mb-6">
-              Empowering students to achieve their career goals through technology
+              Empowering learners to achieve their career goals through technology
             </p>
             <div className="flex justify-center space-x-6 text-gray-400">
               <a href="#" className="hover:text-white transition-colors">Privacy</a>
@@ -294,7 +294,7 @@ const LandingPage: React.FC = () => {
               <Link to="/admin/login" className="hover:text-red-400 transition-colors text-sm">Admin</Link>
             </div>
             <p className="text-gray-500 text-sm mt-6">
-              © 2025 StudyPlatform. All rights reserved.
+              © 2025 SAP — Skill Analytics Platform. All rights reserved.
             </p>
           </div>
         </div>
