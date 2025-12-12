@@ -1,7 +1,7 @@
 const express = require('express');
 const Quiz = require('../models/Quiz');
 const Video = require('../models/Video');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Optional helper to fetch YouTube transcript. We'll try using `youtube-transcript` library if available.

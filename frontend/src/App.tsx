@@ -56,7 +56,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <Router>
-        <div className="min-h-screen bg-gray-950 dark:bg-dark-900 transition-colors duration-300">
+        <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg)' }}>
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}><LandingPage /></motion.div>} />
@@ -80,7 +80,7 @@ const App: React.FC = () => {
               <Route path="/video-lectures" element={<ProtectedRoute><motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3 }}><VideoLectureList /></motion.div></ProtectedRoute>} />
               <Route path="/video-lectures/series/:seriesId" element={<ProtectedRoute><motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3 }}><SeriesVideos /></motion.div></ProtectedRoute>} />
               <Route path="/video-lectures/video/:videoId" element={<ProtectedRoute><motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3 }}><VideoPage /></motion.div></ProtectedRoute>} />
-              <Route path="*" element={<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="min-h-screen flex items-center justify-center bg-gray-950 dark:bg-dark-900"><div className="text-center"><h1 className="text-4xl font-bold text-white mb-4">404</h1><p className="text-gray-400 mb-8">Page not found</p><Navigate to="/" replace /></div></motion.div>} />
+              <Route path="*" element={<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg)' }}><div className="text-center"><h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)', fontFamily: 'Sora, sans-serif' }}>404</h1><p className="mb-8" style={{ color: 'var(--text-muted)' }}>Page not found</p><Navigate to="/" replace /></div></motion.div>} />
             </Routes>
           </AnimatePresence>
         </div>

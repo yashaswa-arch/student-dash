@@ -2,40 +2,10 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react'
-import { Canvas } from '@react-three/fiber'
-import { Float, Box, Sphere } from '@react-three/drei'
 import { useDispatch, useSelector } from 'react-redux'
 import { signupUser, selectAuthLoading, selectAuthError } from '../store/slices/authSlice'
 import { AppDispatch } from '../store'
-
-// 3D Background Component
-const AuthBackground = () => {
-  return (
-    <group>
-      <Float speed={1.5} rotationIntensity={1} floatIntensity={2}>
-        <Box position={[-3, 2, -2]} scale={0.6} args={[1, 1, 1]}>
-          <meshStandardMaterial color="#3b82f6" opacity={0.3} transparent />
-        </Box>
-      </Float>
-      
-      <Float speed={2} rotationIntensity={1.5} floatIntensity={1.5}>
-        <Sphere position={[3, -1, -3]} scale={0.4} args={[1, 32, 32]}>
-          <meshStandardMaterial color="#8b5cf6" opacity={0.4} transparent />
-        </Sphere>
-      </Float>
-      
-      <Float speed={1.8} rotationIntensity={0.8} floatIntensity={2.5}>
-        <Box position={[0, 3, -4]} scale={0.5} args={[1, 1, 1]}>
-          <meshStandardMaterial color="#06b6d4" opacity={0.3} transparent />
-        </Box>
-      </Float>
-      
-      <ambientLight intensity={0.6} />
-      <pointLight position={[10, 10, 10]} intensity={0.8} />
-      <pointLight position={[-10, -10, -10]} intensity={0.4} color="#8b5cf6" />
-    </group>
-  )
-}
+import { AnimatedCharacters } from '../components/auth/AnimatedCharacters'
 
 const SignupPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -129,22 +99,44 @@ const SignupPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center overflow-hidden relative">
-      {/* 3D Background */}
-      <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <AuthBackground />
-        </Canvas>
+    <div className="min-h-screen grid lg:grid-cols-2 overflow-hidden" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Left Side - Animated Characters */}
+      <div className="relative hidden lg:flex flex-col justify-between p-12" style={{ backgroundColor: 'var(--surface)' }}>
+        <div className="relative z-20">
+          <div className="flex items-center gap-2 text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--accent-soft)' }}>
+              <User className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+            </div>
+            <span>CodeMaster</span>
+          </div>
+        </div>
+
+        <AnimatedCharacters 
+          isTyping={formData.username.length > 0 || formData.email.length > 0 || formData.password.length > 0}
+          password={formData.password}
+          showPassword={showPassword}
+        />
+
+        <div className="relative z-20 flex items-center gap-8 text-sm" style={{ color: 'var(--text-muted)' }}>
+          <a href="#" className="hover:opacity-80 transition-opacity">Privacy Policy</a>
+          <a href="#" className="hover:opacity-80 transition-opacity">Terms of Service</a>
+          <a href="#" className="hover:opacity-80 transition-opacity">Contact</a>
+        </div>
+
+        <div className="absolute inset-0 bg-grid-white/[0.03] bg-[size:20px_20px]" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl opacity-10" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.3), transparent)' }} />
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.2), transparent)' }} />
       </div>
 
-      {/* Background Effects */}
-      <div className="absolute top-1/4 left-1/6 w-64 h-64 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/6 w-96 h-96 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full opacity-20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-
-      {/* Main Content */}
-      <div className="relative z-10 w-full max-w-md mx-auto p-6">
+      {/* Right Side - Signup Form */}
+      <div className="flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
         <motion.div
-          className="glass rounded-2xl p-8 shadow-2xl backdrop-blur-xl border border-white/10"
+          className="rounded-2xl p-8 shadow-2xl backdrop-blur-xl border"
+          style={{ 
+            backgroundColor: 'var(--surface)', 
+            borderColor: 'rgba(255,255,255,0.1)'
+          }}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -152,7 +144,11 @@ const SignupPage: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
-              className="text-3xl font-bold text-gradient mb-2"
+              className="text-3xl font-bold mb-2"
+              style={{ 
+                color: 'var(--text-primary)',
+                fontFamily: 'Sora, sans-serif'
+              }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -160,7 +156,7 @@ const SignupPage: React.FC = () => {
               Create Account
             </motion.div>
             <motion.p
-              className="text-gray-300"
+              style={{ color: 'var(--text-muted)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -177,17 +173,22 @@ const SignupPage: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 Username
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className={`input-field pl-10 ${errors.username ? 'border-red-500' : ''}`}
+                  className={`w-full px-4 py-3 pl-10 rounded-lg border transition-colors focus:outline-none focus:ring-2 ${errors.username ? 'border-red-500' : ''}`}
+                  style={{ 
+                    backgroundColor: 'var(--surface-light)', 
+                    borderColor: errors.username ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    color: 'var(--text-primary)'
+                  }}
                   placeholder="Enter your username"
                 />
               </div>
@@ -202,17 +203,22 @@ const SignupPage: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`input-field pl-10 ${errors.email ? 'border-red-500' : ''}`}
+                  className={`w-full px-4 py-3 pl-10 rounded-lg border transition-colors focus:outline-none focus:ring-2 ${errors.email ? 'border-red-500' : ''}`}
+                  style={{ 
+                    backgroundColor: 'var(--surface-light)', 
+                    borderColor: errors.email ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    color: 'var(--text-primary)'
+                  }}
                   placeholder="Enter your email"
                 />
               </div>
@@ -227,23 +233,29 @@ const SignupPage: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`input-field pl-10 pr-10 ${errors.password ? 'border-red-500' : ''}`}
+                  className={`w-full px-4 py-3 pl-10 pr-10 rounded-lg border transition-colors focus:outline-none focus:ring-2 ${errors.password ? 'border-red-500' : ''}`}
+                  style={{ 
+                    backgroundColor: 'var(--surface-light)', 
+                    borderColor: errors.password ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    color: 'var(--text-primary)'
+                  }}
                   placeholder="Create a password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -259,23 +271,29 @@ const SignupPage: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 }}
             >
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`input-field pl-10 pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                  className={`w-full px-4 py-3 pl-10 pr-10 rounded-lg border transition-colors focus:outline-none focus:ring-2 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                  style={{ 
+                    backgroundColor: 'var(--surface-light)', 
+                    borderColor: errors.confirmPassword ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    color: 'var(--text-primary)'
+                  }}
                   placeholder="Confirm your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
                 >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -300,11 +318,15 @@ const SignupPage: React.FC = () => {
             <motion.button
               type="submit"
               disabled={isLoading}
-              className="btn btn-primary w-full btn-lg group"
+              className="w-full py-3 rounded-lg font-semibold transition-all group flex items-center justify-center"
+              style={{ 
+                backgroundColor: 'var(--accent)',
+                color: 'white'
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, opacity: 0.9 }}
               whileTap={{ scale: 0.98 }}
             >
               {isLoading ? (
@@ -323,25 +345,28 @@ const SignupPage: React.FC = () => {
 
           {/* Login Link */}
           <motion.div
-            className="text-center mt-6 pt-6 border-t border-gray-700"
+            className="text-center mt-6 pt-6 border-t"
+            style={{ borderColor: 'rgba(255,255,255,0.1)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9 }}
           >
-            <p className="text-gray-400">
+            <p style={{ color: 'var(--text-muted)' }}>
               Already have an account?{' '}
               <Link 
                 to="/login" 
-                className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
+                className="font-medium transition-colors"
+                style={{ color: 'var(--accent)' }}
               >
                 Sign in
               </Link>
             </p>
-            <p className="text-gray-500 text-sm mt-3">
+            <p className="text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
               Administrative access?{' '}
               <Link 
                 to="/admin/login" 
-                className="text-red-400 hover:text-red-300 font-medium transition-colors"
+                className="font-medium transition-colors"
+                style={{ color: '#ef4444' }}
               >
                 Admin Login
               </Link>
@@ -357,12 +382,14 @@ const SignupPage: React.FC = () => {
           >
             <Link 
               to="/" 
-              className="text-gray-500 hover:text-gray-400 text-sm transition-colors"
+              className="text-sm transition-colors"
+              style={{ color: 'var(--text-muted)' }}
             >
               ← Back to home
             </Link>
           </motion.div>
         </motion.div>
+        </div>
       </div>
     </div>
   )

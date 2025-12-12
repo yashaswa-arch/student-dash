@@ -2,40 +2,10 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react'
-import { Canvas } from '@react-three/fiber'
-import { Float, Box, Sphere } from '@react-three/drei'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser, selectAuthLoading, selectAuthError } from '../store/slices/authSlice'
 import { AppDispatch } from '../store'
-
-// 3D Background Component (reused from signup)
-const AuthBackground = () => {
-  return (
-    <group>
-      <Float speed={1.5} rotationIntensity={1} floatIntensity={2}>
-        <Box position={[-3, 2, -2]} scale={0.6} args={[1, 1, 1]}>
-          <meshStandardMaterial color="#3b82f6" opacity={0.3} transparent />
-        </Box>
-      </Float>
-      
-      <Float speed={2} rotationIntensity={1.5} floatIntensity={1.5}>
-        <Sphere position={[3, -1, -3]} scale={0.4} args={[1, 32, 32]}>
-          <meshStandardMaterial color="#8b5cf6" opacity={0.4} transparent />
-        </Sphere>
-      </Float>
-      
-      <Float speed={1.8} rotationIntensity={0.8} floatIntensity={2.5}>
-        <Box position={[0, 3, -4]} scale={0.5} args={[1, 1, 1]}>
-          <meshStandardMaterial color="#06b6d4" opacity={0.3} transparent />
-        </Box>
-      </Float>
-      
-      <ambientLight intensity={0.6} />
-      <pointLight position={[10, 10, 10]} intensity={0.8} />
-      <pointLight position={[-10, -10, -10]} intensity={0.4} color="#8b5cf6" />
-    </group>
-  )
-}
+import { AnimatedCharacters } from '../components/auth/AnimatedCharacters'
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -104,22 +74,44 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center overflow-hidden relative">
-      {/* 3D Background */}
-      <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-          <AuthBackground />
-        </Canvas>
+    <div className="min-h-screen grid lg:grid-cols-2 overflow-hidden" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Left Side - Animated Characters */}
+      <div className="relative hidden lg:flex flex-col justify-between p-12" style={{ backgroundColor: 'var(--surface)' }}>
+        <div className="relative z-20">
+          <div className="flex items-center gap-2 text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--accent-soft)' }}>
+              <Mail className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+            </div>
+            <span>CodeMaster</span>
+          </div>
+        </div>
+
+        <AnimatedCharacters 
+          isTyping={formData.email.length > 0 || formData.password.length > 0}
+          password={formData.password}
+          showPassword={showPassword}
+        />
+
+        <div className="relative z-20 flex items-center gap-8 text-sm" style={{ color: 'var(--text-muted)' }}>
+          <a href="#" className="hover:opacity-80 transition-opacity">Privacy Policy</a>
+          <a href="#" className="hover:opacity-80 transition-opacity">Terms of Service</a>
+          <a href="#" className="hover:opacity-80 transition-opacity">Contact</a>
+        </div>
+
+        <div className="absolute inset-0 bg-grid-white/[0.03] bg-[size:20px_20px]" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl opacity-10" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.3), transparent)' }} />
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-10" style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.2), transparent)' }} />
       </div>
 
-      {/* Background Effects */}
-      <div className="absolute top-1/4 left-1/6 w-64 h-64 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/6 w-96 h-96 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full opacity-20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-
-      {/* Main Content */}
-      <div className="relative z-10 w-full max-w-md mx-auto p-6">
+      {/* Right Side - Login Form */}
+      <div className="flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
         <motion.div
-          className="glass rounded-2xl p-8 shadow-2xl backdrop-blur-xl border border-white/10"
+          className="rounded-2xl p-8 shadow-2xl backdrop-blur-xl border"
+          style={{ 
+            backgroundColor: 'var(--surface)', 
+            borderColor: 'rgba(255,255,255,0.1)'
+          }}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -127,7 +119,11 @@ const LoginPage: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
-              className="text-3xl font-bold text-gradient mb-2"
+              className="text-3xl font-bold mb-2"
+              style={{ 
+                color: 'var(--text-primary)',
+                fontFamily: 'Sora, sans-serif'
+              }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -135,7 +131,7 @@ const LoginPage: React.FC = () => {
               Welcome Back
             </motion.div>
             <motion.p
-              className="text-gray-300"
+              style={{ color: 'var(--text-muted)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -152,17 +148,25 @@ const LoginPage: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`input-field pl-10 ${errors.email ? 'border-red-500' : ''}`}
+                  onFocus={() => {}}
+                  onBlur={() => {}}
+                  className={`w-full px-4 py-3 pl-10 rounded-lg border transition-colors focus:outline-none focus:ring-2 ${errors.email ? 'border-red-500' : ''}`}
+                  style={{ 
+                    backgroundColor: 'var(--surface-light)', 
+                    borderColor: errors.email ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    color: 'var(--text-primary)',
+                    focusRingColor: 'var(--accent)'
+                  }}
                   placeholder="Enter your email"
                 />
               </div>
@@ -177,23 +181,29 @@ const LoginPage: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`input-field pl-10 pr-10 ${errors.password ? 'border-red-500' : ''}`}
+                  className={`w-full px-4 py-3 pl-10 pr-10 rounded-lg border transition-colors focus:outline-none focus:ring-2 ${errors.password ? 'border-red-500' : ''}`}
+                  style={{ 
+                    backgroundColor: 'var(--surface-light)', 
+                    borderColor: errors.password ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    color: 'var(--text-primary)'
+                  }}
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -212,7 +222,8 @@ const LoginPage: React.FC = () => {
             >
               <Link 
                 to="/forgot-password" 
-                className="text-sm text-brand-400 hover:text-brand-300 transition-colors"
+                className="text-sm transition-colors"
+                style={{ color: 'var(--accent)' }}
               >
                 Forgot your password?
               </Link>
@@ -233,11 +244,15 @@ const LoginPage: React.FC = () => {
             <motion.button
               type="submit"
               disabled={isLoading}
-              className="btn btn-primary w-full btn-lg group"
+              className="w-full py-3 rounded-lg font-semibold transition-all group flex items-center justify-center"
+              style={{ 
+                backgroundColor: 'var(--accent)',
+                color: 'white'
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, opacity: 0.9 }}
               whileTap={{ scale: 0.98 }}
             >
               {isLoading ? (
@@ -263,10 +278,10 @@ const LoginPage: React.FC = () => {
           >
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
+                <div className="w-full border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-transparent text-gray-400">Or continue with</span>
+                <span className="px-2" style={{ backgroundColor: 'var(--surface)', color: 'var(--text-muted)' }}>Or continue with</span>
               </div>
             </div>
           </motion.div>
@@ -278,7 +293,14 @@ const LoginPage: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9 }}
           >
-            <button className="btn btn-outline btn-md">
+            <button 
+              className="px-4 py-2 rounded-lg border transition-colors flex items-center justify-center"
+              style={{ 
+                borderColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: 'var(--surface-light)',
+                color: 'var(--text-primary)'
+              }}
+            >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -287,7 +309,14 @@ const LoginPage: React.FC = () => {
               </svg>
               Google
             </button>
-            <button className="btn btn-outline btn-md">
+            <button 
+              className="px-4 py-2 rounded-lg border transition-colors flex items-center justify-center"
+              style={{ 
+                borderColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: 'var(--surface-light)',
+                color: 'var(--text-primary)'
+              }}
+            >
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.024-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.347-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
               </svg>
@@ -302,20 +331,22 @@ const LoginPage: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0 }}
           >
-            <p className="text-gray-400">
+            <p style={{ color: 'var(--text-muted)' }}>
               Don't have an account?{' '}
               <Link 
                 to="/signup" 
-                className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
+                className="font-medium transition-colors"
+                style={{ color: 'var(--accent)' }}
               >
                 Sign up
               </Link>
             </p>
-            <p className="text-gray-500 text-sm mt-3">
+            <p className="text-sm mt-3" style={{ color: 'var(--text-muted)' }}>
               Administrative access?{' '}
               <Link 
                 to="/admin/login" 
-                className="text-red-400 hover:text-red-300 font-medium transition-colors"
+                className="font-medium transition-colors"
+                style={{ color: '#ef4444' }}
               >
                 Admin Login
               </Link>
@@ -331,12 +362,14 @@ const LoginPage: React.FC = () => {
           >
             <Link 
               to="/" 
-              className="text-gray-500 hover:text-gray-400 text-sm transition-colors"
+              className="text-sm transition-colors"
+              style={{ color: 'var(--text-muted)' }}
             >
               ← Back to home
             </Link>
           </motion.div>
         </motion.div>
+        </div>
       </div>
     </div>
   )

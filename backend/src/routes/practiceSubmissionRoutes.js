@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const PracticeSubmission = require('../models/PracticeSubmission');
 const { auth } = require('../middleware/auth');
+const websocketService = require('../services/websocketService');
 
 /**
  * IMPORTANT: All stats calculations use verdict === 'PASSED' to count as solved.
@@ -111,6 +112,14 @@ router.post('/', auth, async (req, res) => {
       timeTakenInMinutes,
       source: normalizedSource
     });
+
+    // Emit WebSocket event for real-time dashboard updates
+    try {
+      websocketService.emitSubmission(userId, submission);
+    } catch (wsError) {
+      console.error('Error emitting WebSocket event:', wsError);
+      // Don't fail the request if WebSocket fails
+    }
 
     res.status(201).json({
       success: true,

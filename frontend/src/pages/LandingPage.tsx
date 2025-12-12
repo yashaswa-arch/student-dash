@@ -1,40 +1,9 @@
 import React from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Float, Box, Sphere, Torus } from '@react-three/drei'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, BookOpen, Brain, Code, Users, Zap, Star } from 'lucide-react'
-
-// 3D Scene Component
-const Scene3D = () => {
-  return (
-    <group>
-      {/* Floating geometric shapes */}
-      <Float speed={1.5} rotationIntensity={1} floatIntensity={2}>
-        <Box position={[-2, 2, 0]} scale={0.8} args={[1, 1, 1]}>
-          <meshStandardMaterial color="#3b82f6" opacity={0.8} transparent />
-        </Box>
-      </Float>
-      
-      <Float speed={2} rotationIntensity={1.5} floatIntensity={1.5}>
-        <Sphere position={[2, -1, -1]} scale={0.6} args={[1, 32, 32]}>
-          <meshStandardMaterial color="#8b5cf6" opacity={0.7} transparent />
-        </Sphere>
-      </Float>
-      
-      <Float speed={1.8} rotationIntensity={0.8} floatIntensity={2.5}>
-        <Torus position={[0, 1, -2]} scale={0.5} args={[1, 0.3, 16, 32]}>
-          <meshStandardMaterial color="#06b6d4" opacity={0.6} transparent />
-        </Torus>
-      </Float>
-      
-      {/* Ambient and point lights */}
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8b5cf6" />
-    </group>
-  )
-}
+import PulseBeamsFirstDemo from '../components/hero/PulseBeamsFirstDemo'
+import Animated3DScene from '../components/hero/Animated3DScene'
 
 const LandingPage: React.FC = () => {
   const features = [
@@ -71,10 +40,10 @@ const LandingPage: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white overflow-hidden">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
       {/* Navigation */}
       <motion.nav 
-        className="fixed top-0 left-0 right-0 z-50 glass backdrop-blur-md border-b border-white/10"
+        className="fixed top-0 left-0 right-0 z-50 bg-[var(--surface)]/80 backdrop-blur-sm border-b border-white/5"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
@@ -82,130 +51,98 @@ const LandingPage: React.FC = () => {
         <div className="container-width section-padding">
           <div className="flex items-center justify-between h-16">
             <motion.div 
-              className="text-2xl font-bold text-gradient"
+              className="text-2xl font-bold text-white"
               whileHover={{ scale: 1.05 }}
             >
-              SAP
+              <span className="text-white">SAP</span>
+              <span className="text-[var(--accent)]">.</span>
             </motion.div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="hover:text-brand-400 transition-colors">Features</a>
-              <a href="#about" className="hover:text-brand-400 transition-colors">About</a>
-              <a href="#contact" className="hover:text-brand-400 transition-colors">Contact</a>
+              <a href="#features" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Features</a>
+              <a href="#how-it-works" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">How it works</a>
+              <a href="#pricing" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Pricing</a>
+              <a href="#about" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">About</a>
+              <a href="#contact" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">Contact</a>
             </div>
             
             <div className="flex items-center space-x-4">
               <Link 
                 to="/login" 
-                className="btn btn-ghost btn-md hover:bg-white/10"
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors px-4 py-2"
               >
                 Login
-              </Link>
-              <Link 
-                to="/admin/login" 
-                className="btn btn-ghost btn-md hover:bg-red-500/20 text-red-300 border-red-500/30"
-              >
-                Admin
-              </Link>
-              <Link 
-                to="/signup" 
-                className="btn btn-primary btn-md"
-              >
-                Get Started
               </Link>
             </div>
           </div>
         </div>
       </motion.nav>
 
-      {/* Hero Section with 3D Background */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* 3D Background */}
-        <div className="absolute inset-0 z-0">
-          <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-            <Scene3D />
-            <OrbitControls 
-              enableZoom={false} 
-              enablePan={false} 
-              autoRotate 
-              autoRotateSpeed={0.5}
-            />
-          </Canvas>
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden hero-bg pt-16">
+        {/* 3D Background Scene */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <Animated3DScene />
         </div>
         
-        {/* Hero Content */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto section-padding">
-          <motion.h1 
-            className="text-5xl md:text-7xl font-bold mb-6 text-gradient-primary"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Master Coding
-            <br />
-            <span className="text-gradient-accent">Land Your Dream Job</span>
-          </motion.h1>
-          
-          <motion.p 
-            className="text-xl md:text-2xl mb-8 text-gray-300 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Skill analytics platform with interactive coding challenges, mock interviews, 
-            and personalized learning paths designed for career success.
-          </motion.p>
-          
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            <Link 
-              to="/signup"
-              className="btn btn-primary btn-xl group"
+        <div className="container-width section-padding py-20 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Content */}
+            <motion.div 
+              className="space-y-8"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
             >
-              Start Learning Free
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            
-            <Link 
-              to="/login"
-              className="btn btn-outline btn-xl"
+              <h1 
+                className="text-5xl md:text-6xl lg:text-7xl font-bold text-[var(--text-primary)] leading-tight"
+                style={{ fontFamily: 'Sora, sans-serif' }}
+              >
+                Master coding.
+                <br />
+                <span className="text-[var(--accent)]">Build your future.</span>
+              </h1>
+              
+              <p 
+                className="text-xl md:text-2xl text-[var(--text-muted)] max-w-2xl"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Practice smarter with real-time analytics, mock interviews, and personalized learning paths.
+              </p>
+              
+              
+              <div 
+                className="flex flex-wrap items-center gap-6 text-sm text-[var(--text-muted)]"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                <div className="flex items-center gap-2">
+                  <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                  <span>4.9</span>
+                </div>
+                <span>•</span>
+                <span>50k+ Students</span>
+                <span>•</span>
+                <span>13 Languages</span>
+              </div>
+            </motion.div>
+
+            {/* Right Side - PulseBeams */}
+            <motion.div 
+              className="relative h-[400px] md:h-[500px] lg:h-[600px] hidden md:block"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Watch Demo
-            </Link>
-          </motion.div>
-          
-          <motion.div 
-            className="mt-12 flex items-center justify-center space-x-8 text-sm text-gray-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-          >
-            <div className="flex items-center">
-              <Star className="h-4 w-4 text-yellow-400 mr-2" />
-              <span>4.9/5 Rating</span>
-            </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 text-blue-400 mr-2" />
-              <span>50K+ Students</span>
-            </div>
-            <div className="flex items-center">
-              <Zap className="h-4 w-4 text-green-400 mr-2" />
-              <span>13+ Languages</span>
-            </div>
-          </motion.div>
+              <div className="relative w-full h-full">
+                <PulseBeamsFirstDemo />
+              </div>
+            </motion.div>
+          </div>
         </div>
-        
-        {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full opacity-20 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-900/50 backdrop-blur-sm">
+      <section id="features" className="py-20" style={{ backgroundColor: 'var(--surface)' }}>
         <div className="container-width section-padding">
           <motion.div 
             className="text-center mb-16"
@@ -214,10 +151,16 @@ const LandingPage: React.FC = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">
+            <h2 
+              className="text-4xl md:text-5xl font-bold mb-6 text-[var(--text-primary)]"
+              style={{ fontFamily: 'Sora, sans-serif' }}
+            >
               Powerful Features for Success
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p 
+              className="text-xl text-[var(--text-muted)] max-w-3xl mx-auto"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
               Everything you need to excel in coding interviews and land your dream job
             </p>
           </motion.div>
@@ -228,24 +171,41 @@ const LandingPage: React.FC = () => {
               return (
                 <motion.div
                   key={index}
-                  className="card glass p-8 hover:bg-white/5 transition-all duration-300 group"
+                  className="p-8 rounded-xl border border-white/5 hover:border-[var(--accent-soft)] transition-all duration-300 group relative overflow-hidden"
+                  style={{ backgroundColor: 'var(--surface-light)' }}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: -5 }}
+                  whileHover={{ y: -5, scale: 1.02 }}
                 >
-                  <div className="flex items-center mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-r from-brand-500 to-accent-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Icon className="h-6 w-6 text-white" />
+                  {/* Subtle 3D background effect */}
+                  <div className="absolute top-0 right-0 w-32 h-32 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <div className="w-full h-full bg-gradient-to-br from-[var(--accent)] to-transparent rounded-full blur-2xl" />
+                  </div>
+                  
+                  <div className="relative z-10">
+                    <div className="flex items-center mb-6">
+                    <div className="w-16 h-16 bg-[var(--accent-soft)] rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform relative overflow-hidden">
+                      <Icon className="h-8 w-8 text-[var(--accent)] relative z-10" />
+                      <div className="absolute inset-0 opacity-20">
+                        <div className="w-full h-full bg-gradient-to-br from-[var(--accent)] to-transparent" />
+                      </div>
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold mb-4 text-white">
+                  <h3 
+                    className="text-xl font-semibold mb-4 text-[var(--text-primary)]"
+                    style={{ fontFamily: 'Sora, sans-serif' }}
+                  >
                     {feature.title}
                   </h3>
-                  <p className="text-gray-300">
+                  <p 
+                    className="text-[var(--text-muted)]"
+                    style={{ fontFamily: 'Inter, sans-serif' }}
+                  >
                     {feature.description}
                   </p>
+                  </div>
                 </motion.div>
               )
             })}
@@ -254,7 +214,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-brand-600 to-accent-600">
+      <section className="py-20 bg-[var(--accent-soft)]">
         <div className="container-width section-padding text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -262,38 +222,47 @@ const LandingPage: React.FC = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            <h2 
+              className="text-4xl md:text-5xl font-bold mb-6 text-[var(--text-primary)]"
+              style={{ fontFamily: 'Sora, sans-serif' }}
+            >
               Ready to Enhance Your Skills?
             </h2>
-            <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
+            <p 
+              className="text-xl mb-8 text-[var(--text-muted)] max-w-2xl mx-auto"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
               Join thousands of students who have successfully landed their dream jobs
             </p>
-            <Link 
-              to="/signup"
-              className="btn bg-white text-brand-600 hover:bg-gray-100 btn-xl group"
-            >
-              Get Started Today
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 border-t border-gray-800 py-12">
+      <footer className="border-t border-white/5 py-12" style={{ backgroundColor: 'var(--surface)' }}>
         <div className="container-width section-padding">
           <div className="text-center">
-            <div className="text-2xl font-bold text-gradient mb-4">SAP — Skill Analytics Platform</div>
-            <p className="text-gray-400 mb-6">
+            <div 
+              className="text-2xl font-bold mb-4 text-[var(--text-primary)]"
+              style={{ fontFamily: 'Sora, sans-serif' }}
+            >
+              SAP — Skill Analytics Platform
+            </div>
+            <p 
+              className="text-[var(--text-muted)] mb-6"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
               Empowering learners to achieve their career goals through technology
             </p>
-            <div className="flex justify-center space-x-6 text-gray-400">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
-              <a href="#" className="hover:text-white transition-colors">Support</a>
-              <Link to="/admin/login" className="hover:text-red-400 transition-colors text-sm">Admin</Link>
+            <div className="flex justify-center space-x-6 text-[var(--text-muted)]">
+              <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Privacy</a>
+              <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Terms</a>
+              <a href="#" className="hover:text-[var(--text-primary)] transition-colors">Support</a>
             </div>
-            <p className="text-gray-500 text-sm mt-6">
+            <p 
+              className="text-[var(--text-muted)] text-sm mt-6"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
               © 2025 SAP — Skill Analytics Platform. All rights reserved.
             </p>
           </div>

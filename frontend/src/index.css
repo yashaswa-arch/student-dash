@@ -1,6 +1,43 @@
+/* Import fonts - must be before @tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Theme tokens */
+:root {
+  --bg: #0A0F1C;
+  --surface: #0F1724;
+  --surface-light: #141924;
+  --text-primary: #F3F4F6;
+  --text-muted: #9CA3AF;
+  --accent: #3B82F6;
+  --accent-soft: rgba(59,130,246,0.12);
+  
+  /* shadcn/ui theme variables */
+  --background: 210 40% 7%;
+  --foreground: 210 40% 95%;
+  --card: 210 40% 9%;
+  --card-foreground: 210 40% 95%;
+  --popover: 210 40% 9%;
+  --popover-foreground: 210 40% 95%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 9%;
+  --secondary-foreground: 210 40% 95%;
+  --muted: 210 40% 9%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 91% 50%;
+  --accent-foreground: 210 40% 95%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 215 28% 17%;
+  --input: 215 28% 17%;
+  --ring: 217 91% 60%;
+  --radius: 0.5rem;
+}
 
 /* Custom base styles */
 @layer base {
@@ -9,7 +46,8 @@
   }
 
   body {
-    @apply bg-gray-950 text-white;
+    background-color: var(--bg);
+    color: var(--text-primary);
     font-feature-settings: 'rlig' 1, 'calt' 1;
     font-family: 'Inter', system-ui, sans-serif;
   }
@@ -53,7 +91,7 @@
 
   /* Headings */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+    font-family: 'Sora', 'Inter', system-ui, sans-serif;
     @apply font-semibold tracking-tight;
   }
 
@@ -113,17 +151,26 @@
     @apply bg-black/10 backdrop-blur-md border border-black/20;
   }
 
+  /* Hero background utility */
+  .hero-bg {
+    background: radial-gradient(
+      600px 400px at 60% 40%,
+      rgba(59,130,246,0.12),
+      transparent 40%
+    );
+  }
+
   /* Gradient text */
   .text-gradient {
-    @apply bg-gradient-to-r from-brand-600 to-accent-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent;
   }
 
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-400 to-blue-500 bg-clip-text text-transparent;
   }
 
   .text-gradient-accent {
-    @apply bg-gradient-to-r from-accent-500 to-accent-700 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent;
   }
 
   /* Button variants */

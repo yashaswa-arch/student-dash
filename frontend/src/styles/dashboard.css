@@ -1,0 +1,29 @@
+/**
+ * Dashboard-specific styles
+ * Normalized typography and contrast for dashboard components
+ */
+
+/* KPI Number - Near-white color (#E6EEF8), 28-32px */
+.dashboard-scope .dashboard-kpi-number {
+  font-size: 30px; /* 30px - between 28-32px */
+  line-height: 1.2;
+  font-weight: 700;
+  color: #1F2937; /* Dark for light mode - ensures visibility */
+}
+
+/* Dark mode: near-white (#E6EEF8) */
+.dark .dashboard-scope .dashboard-kpi-number {
+  color: #E6EEF8; /* Near-white for dark mode */
+}
+
+/* KPI Subtitle - 12-14px, muted color */
+.dashboard-scope .dashboard-kpi-subtitle {
+  font-size: 13px; /* 13px - between 12-14px */
+  line-height: 1.4;
+  margin-bottom: 4px;
+  color: #6B7280; /* Muted gray for light mode */
+}
+
+.dark .dashboard-scope .dashboard-kpi-subtitle {
+  color: #9CA3AF; /* Lighter muted for dark mode */
+}

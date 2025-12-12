@@ -7,16 +7,20 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:access": "eslint src/pages/NewStudentDashboard.tsx src/components/SlideOver.jsx src/components/GitHubStatsSection.tsx src/components/ContestsSection.tsx --ext ts,tsx,js,jsx --format compact"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.11",
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
-    "framer-motion": "^10.16.16",
+    "framer-motion": "^10.18.0",
     "lucide-react": "^0.303.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -25,8 +29,10 @@
     "react-player": "^3.4.0",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.20.0",
-    "recharts": "^2.12.7",
+    "recharts": "^2.15.4",
     "redux-persist": "^6.0.0",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^3.4.0",
     "three": "^0.158.0"
   },
   "devDependencies": {
@@ -39,6 +45,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.22",
     "eslint": "^8.55.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.5.6",

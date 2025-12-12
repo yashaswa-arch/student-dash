@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -8,6 +9,7 @@ require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
+const websocketService = require('./services/websocketService');
 
 // Import routes
 const userRoutes = require('./routes/userRoutes');
@@ -30,6 +32,7 @@ const githubRoutes = require('./routes/githubRoutes');
 const contestRoutes = require('./routes/contestRoutes');
 const videoLectureRoutes = require('./routes/videoLectureRoutes');
 const devAuthRoutes = require('./routes/devAuth');
+const studentRoutes = require('./routes/studentRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -99,6 +102,7 @@ app.use('/api/coding-profiles', codingProfileRoutes);
 app.use('/api', githubRoutes);
 app.use('/api/contests', contestRoutes);
 app.use('/api/video-lectures', videoLectureRoutes);
+app.use('/api/student', studentRoutes);
 
 // Dev-only routes (mount in dev only)
 if (process.env.NODE_ENV !== 'production') {
@@ -116,10 +120,18 @@ app.use('*', (req, res) => {
 // Error handling middleware (must be last)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+// Create HTTP server from Express app
+const server = http.createServer(app);
+
+// Initialize WebSocket server
+websocketService.initialize(server);
+
+// Start server
+server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+  console.log(`📡 WebSocket server ready on ws://localhost:${PORT}/dashboard-student`);
 });
 
 module.exports = app;
