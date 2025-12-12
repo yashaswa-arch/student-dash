@@ -510,6 +510,23 @@ const NewStudentDashboard: React.FC = () => {
                       Start Practice
                     </button>
                   </div>
+
+                  {/* Video Lectures */}
+                  <div 
+                    className="border border-gray-200 dark:border-dark-600 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    data-testid="card-video-lectures"
+                  >
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Video Lectures</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      Interactive lectures with timed pop-up quizzes
+                    </p>
+                    <button
+                      onClick={() => navigate('/video-lectures')}
+                      className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                      Browse Lectures
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

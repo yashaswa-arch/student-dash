@@ -15,8 +15,6 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
-  Plus,
-  Calendar,
   Target
 } from 'lucide-react'
 import {
@@ -25,14 +23,11 @@ import {
   Pie,
   Cell,
   Tooltip,
-  RadialBarChart,
-  RadialBar,
   BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Legend,
   LineChart,
   Line,
   AreaChart,
@@ -109,7 +104,7 @@ const getPlatformName = (platform: Platform): string => {
   }
 }
 
-const getPlatformIcon = (platform: Platform) => {
+const getPlatformIcon = () => {
   return <Code2 size={18} />
 }
 
@@ -163,7 +158,7 @@ const PlatformListItem: React.FC<PlatformListItemProps> = ({
               isSelected ? 'bg-blue-50 dark:bg-blue-900/10' : ''
             }`}
           >
-            {getPlatformIcon(platform)}
+            {getPlatformIcon()}
             <span className="text-sm font-medium text-gray-900 dark:text-white">
               {getPlatformName(platform)}
             </span>
@@ -179,7 +174,7 @@ const PlatformListItem: React.FC<PlatformListItemProps> = ({
           {!profile && (
             <>
               <div className="flex items-center gap-2 flex-1">
-                {getPlatformIcon(platform)}
+                {getPlatformIcon()}
                 <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {getPlatformName(platform)}
                 </span>
@@ -322,8 +317,8 @@ const PlatformDetailsView: React.FC<PlatformDetailsViewProps> = ({ profile, plat
     const totalSolved = stats.totalSolved ?? 0
 
     // Generate rating progression data (last 6 months)
-    const generateRatingData = () => {
-      const data = []
+    const generateRatingData = (): Array<{ month: string; rating: number; maxRating: number }> => {
+      const data: Array<{ month: string; rating: number; maxRating: number }> = []
       const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       const baseRating = Math.max(1200, rating - 300)
       
@@ -342,8 +337,8 @@ const PlatformDetailsView: React.FC<PlatformDetailsViewProps> = ({ profile, plat
     const ratingData = generateRatingData()
 
     // Generate solved problems trend
-    const generateSolvedTrend = () => {
-      const data = []
+    const generateSolvedTrend = (): Array<{ month: string; solved: number }> => {
+      const data: Array<{ month: string; solved: number }> = []
       const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       const baseSolved = Math.max(0, totalSolved - 150)
       
@@ -744,12 +739,13 @@ const PlatformDetailsView: React.FC<PlatformDetailsViewProps> = ({ profile, plat
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={(() => {
                   const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                  const baseSolved = Math.max(0, stats.totalSolved - 30)
+                  const totalSolved = stats.totalSolved ?? 0
+                  const baseSolved = Math.max(0, totalSolved - 30)
                   return months.map((month, index) => {
                     const progress = (index + 1) / months.length
                     return {
                       month,
-                      solved: Math.round(baseSolved + (stats.totalSolved - baseSolved) * progress)
+                      solved: Math.round(baseSolved + (totalSolved - baseSolved) * progress)
                     }
                   })
                 })()}>
@@ -896,7 +892,11 @@ const CodingPlatformsTab: React.FC = () => {
         toast.success(`${getPlatformName(platform)} profile linked successfully!`)
         await fetchSummary()
         setSelectedPlatform(platform)
-        setExpandedPlatforms(prev => new Set(prev).delete(platform))
+        setExpandedPlatforms(prev => {
+          const next = new Set(prev)
+          next.delete(platform)
+          return next
+        })
       }
     } catch (err: any) {
       console.error('Error linking profile:', err)

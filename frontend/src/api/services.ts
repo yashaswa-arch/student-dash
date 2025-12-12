@@ -365,6 +365,118 @@ export interface Contest {
   lastSyncedAt?: string | null
 }
 
+// Video Lecture API functions
+export const videoLectureAPI = {
+  // Get video metadata (public)
+  getVideo: async (videoId: string) => {
+    const response = await api.get(`/video-lectures/${videoId}`)
+    return response.data
+  },
+
+  // Get quizzes for video (public)
+  getQuizzes: async (videoId: string) => {
+    const response = await api.get(`/video-lectures/quizzes/${videoId}`)
+    return response.data
+  },
+
+  // Submit quiz answer (requires auth)
+  submitQuiz: async (payload: {
+    quizId: string
+    selectedIndex: number | null
+    videoTimestamp: number
+    responseTime?: number
+    attemptedSkip?: boolean
+    videoId: string
+  }) => {
+    const response = await api.post('/video-lectures/quizzes/submit', payload)
+    return response.data
+  },
+
+  // Extract metadata from URL (admin)
+  extractMetadata: async (url: string) => {
+    const adminToken = localStorage.getItem('adminToken')
+    const response = await api.post('/video-lectures/extract-metadata', { url }, {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    })
+    return response.data
+  },
+
+  // Auto-generate timestamps (admin)
+  autoTimestamps: async (videoId: string, numQuizzes: number, startOffset = 60, endOffset = 60) => {
+    const adminToken = localStorage.getItem('adminToken')
+    const response = await api.post(`/video-lectures/${videoId}/auto-timestamps`, {
+      numQuizzes,
+      startOffset,
+      endOffset
+    }, {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    })
+    return response.data
+  },
+
+  // Get topics (public - for listing)
+  getTopics: async () => {
+    try {
+      const response = await api.get('/video-lectures/topics')
+      return response.data
+    } catch (error) {
+      // If endpoint doesn't exist or requires auth, return empty array
+      return { success: false, data: [] }
+    }
+  },
+
+  // Get series (public - for listing)
+  getSeries: async (topicId?: string) => {
+    try {
+      const params = topicId ? { topic: topicId } : {}
+      const response = await api.get('/video-lectures/series', { params })
+      return response.data
+    } catch (error) {
+      return { success: false, data: [] }
+    }
+  },
+
+  // Get series by ID
+  getSeriesById: async (seriesId: string) => {
+    try {
+      const response = await api.get(`/video-lectures/series/${seriesId}/info`)
+      return response.data
+    } catch (error) {
+      return { success: false, data: null }
+    }
+  },
+
+  // Get videos by series
+  getVideosBySeries: async (seriesId: string) => {
+    try {
+      const response = await api.get(`/video-lectures/series/${seriesId}`)
+      return response.data
+    } catch (error) {
+      return { success: false, data: [] }
+    }
+  },
+
+  // Create video (admin)
+  createVideo: async (videoData: any) => {
+    const adminToken = localStorage.getItem('adminToken')
+    const response = await api.post('/video-lectures/videos', videoData, {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    })
+    return response.data
+  },
+
+  // Set timestamps (admin)
+  setTimestamps: async (videoId: string, segmentTimestamps: number[]) => {
+    const adminToken = localStorage.getItem('adminToken')
+    const response = await api.post(`/video-lectures/videos/${videoId}/timestamps`, {
+      segmentTimestamps
+    }, {
+      headers: { Authorization: `Bearer ${adminToken}` }
+    })
+    return response.data
+  }
+}
+
 // Contest API functions
 export const contestAPI = {
   // Get upcoming contests
