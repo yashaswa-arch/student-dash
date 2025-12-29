@@ -9,7 +9,7 @@ AI-powered skill analytics platform for coding practice and interview prep. Trac
 - **Aptitude Prep** – Topic-wise MCQ quizzes (Percentages, Profit & Loss, Time & Work) with detailed analytics
 - **Progress Analytics** – Activity heatmaps, topic mastery, coding streaks, and performance charts
 - **Multi-Language Support** – Java, Python, JavaScript, C++, Go, Rust, and more
-- **Video Learning – Expert-led videos with interactive pop quizzes for active learning
+- Video Learning – Expert-led videos with interactive pop quizzes for active learning
 
 ## 🛠️ Tech Stack
 
